@@ -46,20 +46,55 @@ class HelloWorld {
         glfwMakeContextCurrent(windowHandle)
         glfwSwapInterval(1)
         glfwShowWindow(windowHandle)
-    }
 
-    private fun loop() {
         GL.createCapabilities()
 
         glClearColor(0.2f, 0.2f, 0.2f, 0.0f)
+    }
+
+    private fun loop() {
+
+        val secsPerUpdate = 1.0 / 30.0
+        var previous = glfwGetTime()
+        var steps = 0.0
 
         while (!glfwWindowShouldClose(windowHandle)) {
-            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT) // clear the framebuffer
-            glfwSwapBuffers(windowHandle) // swap the color buffers
+            val start = glfwGetTime()
+            val elapsed = start - previous
+            previous = start
+            steps += elapsed
 
-            // Poll for window events. The key callback above will only be
-            // invoked during this call.
-            glfwPollEvents()
+            handleInput()
+
+            while (steps >= secsPerUpdate) {
+                updateGameState()
+                steps -= secsPerUpdate
+            }
+
+            render()
+            sync(start)
         }
+    }
+
+    private fun updateGameState() {
+
+    }
+
+    private fun sync(loopStartTime: Double) {
+        val loopSlot = 1f / 50
+        val endTime = loopStartTime + loopSlot
+        while (glfwGetTime() < endTime) {
+            Thread.sleep(1)
+        }
+    }
+
+    private fun handleInput() {
+        // Poll for window events. The key callback above will only be invoked during this call.
+        glfwPollEvents()
+    }
+
+    private fun render() {
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT) // clear the framebuffer
+        glfwSwapBuffers(windowHandle) // swap the color buffers
     }
 }

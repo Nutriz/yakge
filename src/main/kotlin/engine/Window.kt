@@ -19,7 +19,7 @@ class Window(
         setupPrintErrorCallback()
         initGlfw()
 
-        createWindow()
+        createGlfwWindow()
 
         setupKeyCallback()
         setupResizeCallback()
@@ -48,7 +48,7 @@ class Window(
             throw IllegalStateException("Unable to initialize GLFW")
     }
 
-    private fun createWindow() {
+    private fun createGlfwWindow() {
         windowHandle = glfwCreateWindow(width, height, title, MemoryUtil.NULL, MemoryUtil.NULL)
         if (windowHandle == MemoryUtil.NULL)
             throw RuntimeException("Failed to create the GLFW window")
@@ -61,9 +61,8 @@ class Window(
     private fun setupKeyCallback() {
         glfwSetKeyCallback(windowHandle) { window, key, _, action, _ ->
             if (action == GLFW_RELEASE) {
-                when (key) {
-                    GLFW_KEY_ESCAPE -> glfwSetWindowShouldClose(window, true)
-                }
+                if (key == GLFW_KEY_ESCAPE)
+                    glfwSetWindowShouldClose(window, true)
             }
         }
     }
@@ -83,4 +82,9 @@ class Window(
     ) = GL11.glClearColor(r, g, b, a)
 
     fun isKeyPressed(keyCode: Int) = glfwGetKey(windowHandle, keyCode) == GLFW_PRESS
+
+    fun update() {
+        glfwSwapBuffers(windowHandle)
+        glfwPollEvents()
+    }
 }

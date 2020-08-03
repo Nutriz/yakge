@@ -1,5 +1,6 @@
 import engine.GameEngine
+import game.DummyGame
 
 fun main() {
-    GameEngine().run()
+    GameEngine(gameLogic = DummyGame()).run()
 }

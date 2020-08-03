@@ -3,17 +3,25 @@ package engine
 import org.lwjgl.Version
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
-import org.lwjgl.opengl.GL11.*
 
-class GameEngine {
+class GameEngine(width: Int = 400,
+                 height: Int = 400,
+                 title: String = "Yak Game Engine",
+                 val gameLogic: GameLogic) : Runnable {
 
-    private val window = Window()
+    private val window = Window(width, height, title)
 
-    fun run() {
+    private val targetFps = 75
+    private val targetUps = 30
 
+    private val interval = 1.0f / targetUps
+    private val loopSlot = 1f / targetFps
+
+    override fun run() {
         println("Hello LWJGL ${Version.getVersion()} !")
 
-        loop()
+        gameLogic.init()
+        gameLoop()
 
         clearAndTerminate()
     }
@@ -27,49 +35,43 @@ class GameEngine {
         glfwSetErrorCallback(null)?.free()
     }
 
-    private fun loop() {
-
-        val secsPerUpdate = 1.0 / 30.0
-        var previous = glfwGetTime()
-        var steps = 0.0
+    private fun gameLoop() {
+        var elapsed: Float
+        var accumulator = 0.0
 
         while (!glfwWindowShouldClose(window.windowHandle)) {
-            val start = glfwGetTime()
-            val elapsed = start - previous
-            previous = start
-            steps += elapsed
+            elapsed = Timer.elapsedTime
+            accumulator += elapsed
 
-            handleInput()
+            input()
 
-            while (steps >= secsPerUpdate) {
-                updateGameState()
-                steps -= secsPerUpdate
+            while (accumulator >= interval) {
+                update()
+                accumulator -= interval
             }
 
             render()
-            sync(start)
+            sync(Timer.time)
         }
     }
 
-    private fun updateGameState() {
-
+    private fun update() {
+        gameLogic.update(interval)
     }
 
     private fun sync(loopStartTime: Double) {
-        val loopSlot = 1f / 50
         val endTime = loopStartTime + loopSlot
-        while (glfwGetTime() < endTime) {
+        while (Timer.time < endTime) {
             Thread.sleep(1)
         }
     }
 
-    private fun handleInput() {
-        // Poll for window events. The key callback above will only be invoked during this call.
-        glfwPollEvents()
+    private fun input() {
+        gameLogic.input(window)
     }
 
     private fun render() {
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT) // clear the framebuffer
-        glfwSwapBuffers(window.windowHandle) // swap the color buffers
+        gameLogic.render(window)
+        window.update()
     }
 }

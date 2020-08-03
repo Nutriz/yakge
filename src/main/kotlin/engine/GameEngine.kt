@@ -3,6 +3,8 @@ package engine
 import org.lwjgl.Version
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
+import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.*
 
 class GameEngine(width: Int = 400,
                  height: Int = 400,
@@ -71,6 +73,10 @@ class GameEngine(width: Int = 400,
     }
 
     private fun render() {
+        if (window.isResized) {
+            glViewport(0, 0, window.width, window.height)
+            window.isResized = false
+        }
         gameLogic.render(window)
         window.update()
     }

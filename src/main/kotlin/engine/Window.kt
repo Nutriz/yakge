@@ -14,11 +14,12 @@ class Window(
 ) {
 
     var windowHandle: Long = 0
+    var isResized = false
 
     init {
         setupPrintErrorCallback()
-        initGlfw()
 
+        initGlfw()
         createGlfwWindow()
 
         setupKeyCallback()
@@ -71,6 +72,7 @@ class Window(
         glfwSetFramebufferSizeCallback(windowHandle) { _: Long, width: Int, height: Int ->
             this.width = width
             this.height = height
+            isResized = true
         }
     }
 

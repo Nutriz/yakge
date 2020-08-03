@@ -5,6 +5,7 @@ import engine.Window
 import org.joml.Math
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.*
 
 class DummyGame : GameLogic {
 
@@ -12,7 +13,7 @@ class DummyGame : GameLogic {
     private var direction: Int = 0
 
     override fun init() {
-        TODO("Not yet implemented")
+
     }
 
     override fun input(window: Window) {
@@ -29,6 +30,6 @@ class DummyGame : GameLogic {
 
     override fun render(window: Window) {
         window.setBackgroundColor(color, color, color, 0.0f)
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
     }
 }

@@ -1,3 +1,5 @@
+import engine.GameEngine
+
 fun main() {
-    HelloWorld().run()
+    GameEngine().run()
 }

@@ -29,6 +29,7 @@ tasks.withType<KotlinCompile>() {
 }
 
 dependencies {
+    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
     implementation("org.lwjgl", "lwjgl")

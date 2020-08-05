@@ -1,5 +1,6 @@
 package game
 
+import com.curiouscreature.kotlin.math.Float3
 import engine.GameLogic
 import engine.Window
 import org.joml.Math
@@ -9,7 +10,7 @@ import org.lwjgl.opengl.GL11.*
 
 class DummyGame : GameLogic {
 
-    private var color: Float = 0f
+    private var color = Float3(0.0f)
     private var direction: Int = 0
 
     override fun init() {
@@ -29,7 +30,7 @@ class DummyGame : GameLogic {
     }
 
     override fun render(window: Window) {
-        window.setBackgroundColor(color, color, color, 0.0f)
+        window.setBackgroundColor(color)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
     }
 }

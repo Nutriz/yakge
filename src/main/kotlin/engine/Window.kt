@@ -1,5 +1,6 @@
 package engine
 
+import com.curiouscreature.kotlin.math.Float3
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
@@ -32,8 +33,6 @@ class Window(
         glfwShowWindow(windowHandle)
 
         GL.createCapabilities()
-
-        setBackgroundColor(0.2f, 0.2f, 0.2f)
     }
 
     private fun centerTheWindow() {
@@ -81,6 +80,11 @@ class Window(
         b: Float = 0.0f,
         a: Float = 0.0f
     ) = GL11.glClearColor(r, g, b, a)
+
+    fun setBackgroundColor(
+        color: Float3,
+        a: Float = 0.0f
+    ) = GL11.glClearColor(color.r, color.g, color.b, a)
 
     fun isKeyPressed(keyCode: Int) = glfwGetKey(windowHandle, keyCode) == GLFW_PRESS
 

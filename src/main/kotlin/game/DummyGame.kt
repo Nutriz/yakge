@@ -25,8 +25,14 @@ class DummyGame : GameLogic {
             0.5f, -0.5f, 0.0f,
             0.5f,  0.5f, 0.0f,
         )
+        val colours = floatArrayOf(
+            0.5f, 0.0f, 0.0f,
+            0.0f, 0.5f, 0.0f,
+            0.0f, 0.0f, 0.5f,
+            0.0f, 0.5f, 0.5f,
+        )
         val indices = intArrayOf(0, 1, 3, 3, 1, 2)
-        mesh = Mesh(positions, indices)
+        mesh = Mesh(positions, colours, indices)
     }
 
     override fun input(window: Window) {

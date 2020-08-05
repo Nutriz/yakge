@@ -8,23 +8,24 @@ import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import kotlin.properties.Delegates
 
-class Mesh(positions: FloatArray, indices: IntArray) {
+class Mesh(positions: FloatArray, colours: FloatArray, indices: IntArray) {
 
     var vaoId by Delegates.notNull<Int>()
     private var vboId by Delegates.notNull<Int>()
+    private var colourVboId by Delegates.notNull<Int>()
     private var idxVboId by Delegates.notNull<Int>()
 
     val vertexCount = indices.size
 
     init {
         val positionsBuffer = positions.toFloatBuffer()
+        val coloursBuffer = colours.toFloatBuffer()
         val indicesBuffer = indices.toIntBuffer()
 
         createVao()
         createPosVbo(positionsBuffer)
+        createColourVbo(coloursBuffer)
         createIndicesVbo(indicesBuffer)
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0)
 
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
@@ -40,6 +41,16 @@ class Mesh(positions: FloatArray, indices: IntArray) {
         glBindBuffer(GL_ARRAY_BUFFER, vboId)
         glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW)
         glEnableVertexAttribArray(0)
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0)
+        MemoryUtil.memFree(buffer)
+    }
+
+    private fun createColourVbo(buffer: FloatBuffer) {
+        colourVboId = glGenBuffers()
+        glBindBuffer(GL_ARRAY_BUFFER, colourVboId)
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW)
+        glEnableVertexAttribArray(1)
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
         MemoryUtil.memFree(buffer)
     }
 
@@ -47,7 +58,6 @@ class Mesh(positions: FloatArray, indices: IntArray) {
         idxVboId = glGenBuffers()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxVboId)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW)
-        glEnableVertexAttribArray(0)
         MemoryUtil.memFree(buffer)
     }
 
@@ -65,6 +75,7 @@ class Mesh(positions: FloatArray, indices: IntArray) {
     private fun deleteVbos() {
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         glDeleteBuffers(vboId)
+        glDeleteBuffers(colourVboId)
         glDeleteBuffers(idxVboId)
     }
 }

@@ -3,8 +3,7 @@ package engine
 import org.lwjgl.Version
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL11.glViewport
 
 class GameEngine(width: Int = 400,
                  height: Int = 400,
@@ -22,10 +21,20 @@ class GameEngine(width: Int = 400,
     override fun run() {
         println("Hello LWJGL ${Version.getVersion()} !")
 
-        gameLogic.init()
-        gameLoop()
+        try {
+            gameLogic.init()
+            gameLoop()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            cleanup()
+        }
 
         clearAndTerminate()
+    }
+
+    private fun cleanup() {
+        gameLogic.cleanup()
     }
 
     private fun clearAndTerminate() {

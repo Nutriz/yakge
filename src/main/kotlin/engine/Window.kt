@@ -37,10 +37,9 @@ class Window(
     }
 
     private fun centerTheWindow() {
-        val videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor())
-
-        videoMode?.let {
-            glfwSetWindowPos(windowHandle, (it.width() - width) / 2, (it.height() - height) / 2)
+        val primaryMonitor = glfwGetPrimaryMonitor()
+        glfwGetVideoMode(primaryMonitor)?.let { videoMode ->
+            glfwSetWindowPos(windowHandle, (videoMode.width() - width) / 2, (videoMode.height() - height) / 2)
         }
     }
 

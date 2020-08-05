@@ -19,12 +19,14 @@ class DummyGame : GameLogic {
     override fun init() {
         renderer = Renderer()
 
-        mesh = Mesh(floatArrayOf(
-                0.0f, 0.5f, 0.0f,
-                -0.5f, -0.5f, 0.0f,
-                0.5f, -0.5f, 0.0f
-            )
+        val positions = floatArrayOf(
+            -0.5f,  0.5f, 0.0f,
+            -0.5f, -0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            0.5f,  0.5f, 0.0f,
         )
+        val indices = intArrayOf(0, 1, 3, 3, 1, 2)
+        mesh = Mesh(positions, indices)
     }
 
     override fun input(window: Window) {

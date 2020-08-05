@@ -3,6 +3,7 @@ package game
 import com.curiouscreature.kotlin.math.Float3
 import engine.GameLogic
 import engine.Window
+import engine.graphics.Mesh
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL30.*
 
@@ -11,10 +12,19 @@ class DummyGame : GameLogic {
     private var color = Float3(0.0f)
     private var direction: Int = 0
 
-    lateinit var renderer: Renderer
+    private lateinit var renderer: Renderer
+
+    lateinit var mesh: Mesh
 
     override fun init() {
         renderer = Renderer()
+
+        mesh = Mesh(floatArrayOf(
+                0.0f, 0.5f, 0.0f,
+                -0.5f, -0.5f, 0.0f,
+                0.5f, -0.5f, 0.0f
+            )
+        )
     }
 
     override fun input(window: Window) {
@@ -33,10 +43,11 @@ class DummyGame : GameLogic {
         window.setBackgroundColor(color)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-        renderer.draw()
+        renderer.draw(listOf(mesh))
     }
 
     override fun cleanup() {
         renderer.cleanup()
+        mesh.cleanup()
     }
 }

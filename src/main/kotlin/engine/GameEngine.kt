@@ -33,10 +33,6 @@ class GameEngine(width: Int = 400,
         clearAndTerminate()
     }
 
-    private fun cleanup() {
-        gameLogic.cleanup()
-    }
-
     private fun clearAndTerminate() {
         // Free the window callbacks and destroy the window
         glfwFreeCallbacks(window.windowHandle)
@@ -88,5 +84,9 @@ class GameEngine(width: Int = 400,
         }
         gameLogic.render(window)
         window.update()
+    }
+
+    private fun cleanup() {
+        gameLogic.cleanup()
     }
 }

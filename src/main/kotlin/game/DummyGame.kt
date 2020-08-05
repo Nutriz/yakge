@@ -3,23 +3,18 @@ package game
 import com.curiouscreature.kotlin.math.Float3
 import engine.GameLogic
 import engine.Window
-import engine.graphic.ShaderProgram
 import org.lwjgl.glfw.GLFW
-import org.lwjgl.opengl.GL11.*
-import java.io.File
+import org.lwjgl.opengl.GL30.*
 
 class DummyGame : GameLogic {
 
     private var color = Float3(0.0f)
     private var direction: Int = 0
 
-    lateinit var shader: ShaderProgram
+    lateinit var renderer: Renderer
 
     override fun init() {
-        shader = ShaderProgram(
-            File("/shader/vertex.glsl").readText(),
-            File("/shader/fragment.glsl").readText()
-        )
+        renderer = Renderer()
     }
 
     override fun input(window: Window) {
@@ -38,14 +33,10 @@ class DummyGame : GameLogic {
         window.setBackgroundColor(color)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-        shader.bind()
-
-        // draw triangles
-
-        shader.unbind()
+        renderer.draw()
     }
 
     override fun cleanup() {
-        shader.cleanup()
+        renderer.cleanup()
     }
 }

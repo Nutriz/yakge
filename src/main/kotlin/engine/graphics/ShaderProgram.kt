@@ -1,4 +1,4 @@
-package engine.graphic
+package engine.graphics
 
 import org.lwjgl.opengl.GL20.*
 import kotlin.properties.Delegates

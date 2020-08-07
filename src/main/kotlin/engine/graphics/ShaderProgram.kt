@@ -1,6 +1,9 @@
 package engine.graphics
 
+import Log
+import org.joml.Matrix4f
 import org.lwjgl.opengl.GL20.*
+import org.lwjgl.system.MemoryStack
 import kotlin.properties.Delegates
 
 class ShaderProgram(
@@ -12,6 +15,9 @@ class ShaderProgram(
 
     private var vertexId by Delegates.notNull<Int>()
     private var fragmentId by Delegates.notNull<Int>()
+
+    // TODO refactor to an Uniform data class
+    private val uniforms = mutableMapOf<String, Int>()
 
     init {
         createProgram()
@@ -51,6 +57,22 @@ class ShaderProgram(
         return shaderId
     }
 
+    fun createUniform(uniformName: String) {
+        val uniformLocation = glGetUniformLocation(programId, uniformName)
+        if (uniformLocation < 0) {
+            throw Exception("Could not find uniform: $uniformName")
+        }
+        uniforms[uniformName] = uniformLocation
+    }
+
+    fun setUniform(uniformName: String, value: Matrix4f) {
+        MemoryStack.stackPush().use { stack ->
+            uniforms[uniformName]?.let { uniformLocation ->
+                glUniformMatrix4fv(uniformLocation, false, value.get(stack.mallocFloat(16)))
+            }
+        }
+    }
+
     private fun link() {
         glLinkProgram(programId)
 
@@ -61,7 +83,7 @@ class ShaderProgram(
 
         glValidateProgram(programId)
         if (glGetProgrami(programId, GL_VALIDATE_STATUS) == 0) {
-            System.err.println("Warning validating Shader code: " + glGetProgramInfoLog(programId, 1024));
+            Log.error("Warning validating Shader code: " + glGetProgramInfoLog(programId, 1024));
         }
     }
 

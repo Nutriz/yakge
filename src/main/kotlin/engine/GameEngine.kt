@@ -1,5 +1,6 @@
 package engine
 
+import Log
 import org.lwjgl.Version
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*
@@ -19,7 +20,7 @@ class GameEngine(width: Int = 400,
     private val loopSlot = 1f / targetFps
 
     override fun run() {
-        println("Hello LWJGL ${Version.getVersion()} !")
+        Log.info("Hello LWJGL ${Version.getVersion()} !")
 
         try {
             gameLogic.init(window)

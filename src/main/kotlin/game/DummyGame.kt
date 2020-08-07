@@ -20,10 +20,10 @@ class DummyGame : GameLogic {
         renderer = Renderer(window)
 
         val positions = floatArrayOf(
-            -0.5f,  0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            0.5f,  0.5f, 0.0f,
+            -0.5f,  0.5f, -1.05f,
+            -0.5f, -0.5f, -1.05f,
+            0.5f, -0.5f,  -1.05f,
+            0.5f,  0.5f,  -1.05f,
         )
         val colours = floatArrayOf(
             0.5f, 0.0f, 0.0f,

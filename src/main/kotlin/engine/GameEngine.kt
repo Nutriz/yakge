@@ -1,6 +1,7 @@
 package engine
 
 import Log
+import engine.utils.Timer
 import org.lwjgl.Version
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
 import org.lwjgl.glfw.GLFW.*

@@ -1,11 +1,11 @@
 package engine
 
-import com.curiouscreature.kotlin.math.Float3
 import engine.graphics.Mesh
+import org.joml.Vector3f
 
 data class GameItem(
         val mesh: Mesh,
-        val position: Float3 = Float3(),
+        val position: Vector3f = Vector3f(),
         val scale: Float = 1f,
-        val rotation: Float3 = Float3()
+        val rotation: Vector3f = Vector3f(),
 )

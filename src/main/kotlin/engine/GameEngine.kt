@@ -22,7 +22,7 @@ class GameEngine(width: Int = 400,
         println("Hello LWJGL ${Version.getVersion()} !")
 
         try {
-            gameLogic.init()
+            gameLogic.init(window)
             gameLoop()
         } catch (e: Exception) {
             e.printStackTrace()

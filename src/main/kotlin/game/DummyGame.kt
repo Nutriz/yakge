@@ -16,8 +16,8 @@ class DummyGame : GameLogic {
 
     lateinit var mesh: Mesh
 
-    override fun init() {
-        renderer = Renderer()
+    override fun init(window: Window) {
+        renderer = Renderer(window)
 
         val positions = floatArrayOf(
             -0.5f,  0.5f, 0.0f,

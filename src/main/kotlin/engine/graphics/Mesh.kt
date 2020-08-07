@@ -15,7 +15,7 @@ class Mesh(positions: FloatArray, colours: FloatArray, indices: IntArray) {
     private var colourVboId by Delegates.notNull<Int>()
     private var idxVboId by Delegates.notNull<Int>()
 
-    val vertexCount = indices.size
+    private val vertexCount = indices.size
 
     init {
         val positionsBuffer = positions.toFloatBuffer()
@@ -50,7 +50,7 @@ class Mesh(positions: FloatArray, colours: FloatArray, indices: IntArray) {
         glBindBuffer(GL_ARRAY_BUFFER, colourVboId)
         glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW)
         glEnableVertexAttribArray(1)
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0)
         MemoryUtil.memFree(buffer)
     }
 
@@ -59,6 +59,12 @@ class Mesh(positions: FloatArray, colours: FloatArray, indices: IntArray) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idxVboId)
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, buffer, GL_STATIC_DRAW)
         MemoryUtil.memFree(buffer)
+    }
+
+    fun render() {
+        glBindVertexArray(vaoId)
+        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0)
+        glBindVertexArray(0)
     }
 
     fun cleanup() {

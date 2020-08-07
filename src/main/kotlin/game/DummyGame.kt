@@ -1,6 +1,7 @@
 package game
 
 import com.curiouscreature.kotlin.math.Float3
+import engine.GameItem
 import engine.GameLogic
 import engine.Window
 import engine.graphics.Mesh
@@ -14,7 +15,9 @@ class DummyGame : GameLogic {
 
     private lateinit var renderer: Renderer
 
-    lateinit var mesh: Mesh
+    private lateinit var mesh: Mesh
+
+    private lateinit var gameItem: GameItem
 
     override fun init(window: Window) {
         renderer = Renderer(window)
@@ -33,6 +36,7 @@ class DummyGame : GameLogic {
         )
         val indices = intArrayOf(0, 1, 3, 3, 1, 2)
         mesh = Mesh(positions, colours, indices)
+        gameItem = GameItem(mesh)
     }
 
     override fun input(window: Window) {
@@ -51,7 +55,7 @@ class DummyGame : GameLogic {
         window.setBackgroundColor(color)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-        renderer.draw(listOf(mesh))
+        renderer.render(window, listOf(gameItem))
     }
 
     override fun cleanup() {

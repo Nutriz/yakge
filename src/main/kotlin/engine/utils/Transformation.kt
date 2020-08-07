@@ -1,9 +1,20 @@
 package engine.utils
 
 import com.curiouscreature.kotlin.math.radians
-import game.PerspectiveConfig
+import engine.Window
 import org.joml.Matrix4f
 import org.joml.Vector3f
+
+data class PerspectiveConfig(
+        val fov: Float = radians(60.0f),
+        var aspectRatio: Float = 1f,
+        val zNear: Float = 0.1f,
+        val zFar: Float = 1000f
+) {
+    fun updateRatio(window: Window) {
+        aspectRatio = window.width.toFloat() / window.height.toFloat()
+    }
+}
 
 object Transformation {
 

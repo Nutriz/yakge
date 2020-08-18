@@ -2,7 +2,7 @@ import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.0-rc"
+    kotlin("jvm") version "1.4.0"
 }
 
 group = "fr.nutriz"

@@ -1,6 +1,5 @@
 package game
 
-import com.curiouscreature.kotlin.math.Float3
 import engine.GameItem
 import engine.GameLogic
 import engine.Window
@@ -9,9 +8,6 @@ import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL30.*
 
 class DummyGame : GameLogic {
-
-    private var color = Float3(0.0f)
-    private var direction: Int = 0
 
     private lateinit var renderer: Renderer
 
@@ -23,36 +19,54 @@ class DummyGame : GameLogic {
         renderer = Renderer(window)
 
         val positions = floatArrayOf(
-            -0.5f,  0.5f, -1.05f,
-            -0.5f, -0.5f, -1.05f,
-            0.5f, -0.5f,  -1.05f,
-            0.5f,  0.5f,  -1.05f,
+                -0.5f, 0.5f, 0f,
+                -0.5f, -0.5f, 0f,
+                0.5f, -0.5f, 0f,
+                0.5f, 0.5f, 0f,
         )
         val colours = floatArrayOf(
-            0.5f, 0.0f, 0.0f,
-            0.0f, 0.5f, 0.0f,
-            0.0f, 0.0f, 0.5f,
-            0.0f, 0.5f, 0.5f,
+                0.5f, 0.0f, 0.0f,
+                0.0f, 0.5f, 0.0f,
+                0.0f, 0.0f, 0.5f,
+                0.0f, 0.5f, 0.5f,
         )
         val indices = intArrayOf(0, 1, 3, 3, 1, 2)
         mesh = Mesh(positions, colours, indices)
         gameItem = GameItem(mesh)
+        gameItem.position.set(0f, 0f, -2f)
     }
 
     override fun input(window: Window) {
-        direction = when {
-            window.isKeyPressed(GLFW.GLFW_KEY_UP) -> 1
-            window.isKeyPressed(GLFW.GLFW_KEY_DOWN) -> -1
-            else -> 0
+
+        when {
+            window.isKeyPressed(GLFW.GLFW_KEY_X) -> gameItem.scale += 0.01f
+            window.isKeyPressed(GLFW.GLFW_KEY_C) -> gameItem.scale -= 0.01f
+            else -> gameItem.scale
+        }
+
+        when {
+            window.isKeyPressed(GLFW.GLFW_KEY_LEFT) -> gameItem.position.x -= 0.01f
+            window.isKeyPressed(GLFW.GLFW_KEY_RIGHT) -> gameItem.position.x += 0.01f
+            window.isKeyPressed(GLFW.GLFW_KEY_UP) -> gameItem.position.y += 0.01f
+            window.isKeyPressed(GLFW.GLFW_KEY_DOWN) -> gameItem.position.y -= 0.01f
+        }
+
+        when {
+            window.isKeyPressed(GLFW.GLFW_KEY_S) -> {
+                var rotation = gameItem.rotation.z + 1.5f
+                if (rotation > 360) {
+                    rotation = 0f
+                }
+                gameItem.rotation.z = rotation
+            }
         }
     }
 
     override fun update(delta: Float) {
-        color += direction * 0.01f
+
     }
 
     override fun render(window: Window) {
-        window.setBackgroundColor(color)
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
         renderer.render(window, listOf(gameItem))

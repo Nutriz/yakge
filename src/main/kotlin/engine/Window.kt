@@ -33,6 +33,7 @@ class Window(
         glfwShowWindow(windowHandle)
 
         GL.createCapabilities()
+        
     }
 
     private fun centerTheWindow() {

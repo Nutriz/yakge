@@ -5,6 +5,8 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.GL_DEPTH_TEST
+import org.lwjgl.opengl.GL11.glEnable
 import org.lwjgl.system.MemoryUtil
 
 
@@ -33,7 +35,7 @@ class Window(
         glfwShowWindow(windowHandle)
 
         GL.createCapabilities()
-        
+        glEnable(GL_DEPTH_TEST);
     }
 
     private fun centerTheWindow() {

@@ -22,6 +22,8 @@ class Renderer(window: Window) {
         Log.info(perspectiveConfig)
         shaderProgram.createUniform("projectionMatrix")
         shaderProgram.createUniform("worldMatrix")
+
+        shaderProgram.createUniform("texture_sampler")
     }
 
     fun render(window: Window, items: List<GameItem>) {
@@ -30,9 +32,14 @@ class Renderer(window: Window) {
         shaderProgram.bind()
 
         updateProjectionMatrix()
+        enableTextureSampler(0)
         renderEachItem(items)
 
         shaderProgram.unbind()
+    }
+
+    private fun enableTextureSampler(unitIndex: Int) {
+        shaderProgram.setUniform("texture_sampler", unitIndex)
     }
 
     private fun updateProjectionMatrix() {

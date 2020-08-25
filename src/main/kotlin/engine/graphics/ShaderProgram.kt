@@ -73,6 +73,12 @@ class ShaderProgram(
         }
     }
 
+    fun setUniform(uniformName: String, value: Int) {
+            uniforms[uniformName]?.let { uniformLocation ->
+                glUniform1i(uniformLocation, value)
+        }
+    }
+
     private fun link() {
         glLinkProgram(programId)
 

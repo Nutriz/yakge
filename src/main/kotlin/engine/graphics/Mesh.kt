@@ -8,23 +8,23 @@ import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import kotlin.properties.Delegates
 
-class Mesh(positions: FloatArray, colours: FloatArray, indices: IntArray) {
+class Mesh(positions: FloatArray, texCoords: FloatArray, indices: IntArray, private val texture: Texture) {
 
     var vaoId by Delegates.notNull<Int>()
     private var vboId by Delegates.notNull<Int>()
-    private var colourVboId by Delegates.notNull<Int>()
+    private var texCoordsVboId by Delegates.notNull<Int>()
     private var idxVboId by Delegates.notNull<Int>()
 
     private val vertexCount = indices.size
 
     init {
         val positionsBuffer = positions.toFloatBuffer()
-        val coloursBuffer = colours.toFloatBuffer()
+        val texCoordsBuffer = texCoords.toFloatBuffer()
         val indicesBuffer = indices.toIntBuffer()
 
         createVao()
         createPosVbo(positionsBuffer)
-        createColourVbo(coloursBuffer)
+        createTexCoordsVbo(texCoordsBuffer)
         createIndicesVbo(indicesBuffer)
 
         glBindBuffer(GL_ARRAY_BUFFER, 0)
@@ -45,12 +45,12 @@ class Mesh(positions: FloatArray, colours: FloatArray, indices: IntArray) {
         MemoryUtil.memFree(buffer)
     }
 
-    private fun createColourVbo(buffer: FloatBuffer) {
-        colourVboId = glGenBuffers()
-        glBindBuffer(GL_ARRAY_BUFFER, colourVboId)
+    private fun createTexCoordsVbo(buffer: FloatBuffer) {
+        texCoordsVboId = glGenBuffers()
+        glBindBuffer(GL_ARRAY_BUFFER, texCoordsVboId)
         glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW)
         glEnableVertexAttribArray(1)
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0)
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0)
         MemoryUtil.memFree(buffer)
     }
 
@@ -62,15 +62,13 @@ class Mesh(positions: FloatArray, colours: FloatArray, indices: IntArray) {
     }
 
     fun render() {
+
+        glActiveTexture(GL_TEXTURE0)
+        texture.bind()
+
         glBindVertexArray(vaoId)
         glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0)
         glBindVertexArray(0)
-    }
-
-    fun cleanup() {
-        glDisableVertexAttribArray(0)
-        deleteVbos()
-        deleteVao()
     }
 
     private fun deleteVao() {
@@ -81,7 +79,15 @@ class Mesh(positions: FloatArray, colours: FloatArray, indices: IntArray) {
     private fun deleteVbos() {
         glBindBuffer(GL_ARRAY_BUFFER, 0)
         glDeleteBuffers(vboId)
-        glDeleteBuffers(colourVboId)
+        glDeleteBuffers(texCoordsVboId)
         glDeleteBuffers(idxVboId)
+    }
+
+    fun cleanup() {
+        glDisableVertexAttribArray(0)
+        glDisableVertexAttribArray(1)
+        deleteVbos()
+        texture.cleanup()
+        deleteVao()
     }
 }

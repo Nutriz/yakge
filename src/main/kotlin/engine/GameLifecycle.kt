@@ -1,6 +1,6 @@
 package engine
 
-interface GameLogic {
+interface GameLifecycle {
     fun init(window: Window)
     fun input(window: Window)
     fun update(delta: Float)

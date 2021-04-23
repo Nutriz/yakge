@@ -2,16 +2,14 @@ package engine.utils
 
 object Timer {
 
-    private var lastLoopTime = time
+    private var lastLoopTime = getTime()
 
-    val time: Double
-        get() = System.nanoTime() / 1000_000_000.0
+    fun getElapsedTime(): Float {
+        val time = getTime()
+        val elapsedTime = (time - lastLoopTime).toFloat()
+        lastLoopTime = time
+        return elapsedTime
+    }
 
-    val elapsedTime: Float
-        get() {
-            val time = time
-            val elapsedTime = (time - lastLoopTime).toFloat()
-            lastLoopTime = time
-            return elapsedTime
-        }
+    fun getTime() = System.nanoTime() / 1000_000_000.0
 }

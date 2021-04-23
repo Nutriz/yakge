@@ -2,13 +2,13 @@ import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.0"
+    kotlin("jvm") version "1.4.32"
 }
 
 group = "fr.nutriz"
 version = "0.1-alpha1"
 val lwjglVersion = "3.2.3"
-val jomlVersion = "1.9.25"
+val jomlVersion = "1.10.1"
 
 val lwjglNatives = when (OperatingSystem.current()) {
     OperatingSystem.LINUX   -> "natives-linux"
@@ -19,12 +19,9 @@ val lwjglNatives = when (OperatingSystem.current()) {
 
 repositories {
     mavenCentral()
-    maven {
-        url = uri("https://dl.bintray.com/kotlin/kotlin-eap")
-    }
 }
 
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "11"
 }
 

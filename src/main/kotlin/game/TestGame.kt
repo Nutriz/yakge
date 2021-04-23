@@ -1,7 +1,7 @@
 package game
 
 import engine.GameItem
-import engine.GameLogic
+import engine.GameLifecycle
 import engine.Window
 import engine.graphics.Mesh
 import engine.graphics.Texture
@@ -9,7 +9,7 @@ import org.lwjgl.glfw.GLFW
 import org.lwjgl.opengl.GL30.*
 
 
-class DummyGame : GameLogic {
+class TestGame : GameLifecycle {
 
     private lateinit var renderer: Renderer
 

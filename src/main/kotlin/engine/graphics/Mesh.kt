@@ -1,16 +1,16 @@
 package engine.graphics
 
+import engine.utils.toFloatBuffer
+import engine.utils.toIntBuffer
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.system.MemoryUtil
-import toFloatBuffer
-import toIntBuffer
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import kotlin.properties.Delegates
 
 class Mesh(positions: FloatArray, texCoords: FloatArray, indices: IntArray, private val texture: Texture) {
 
-    var vaoId by Delegates.notNull<Int>()
+    private var vaoId by Delegates.notNull<Int>()
     private var vboId by Delegates.notNull<Int>()
     private var texCoordsVboId by Delegates.notNull<Int>()
     private var idxVboId by Delegates.notNull<Int>()
@@ -62,7 +62,6 @@ class Mesh(positions: FloatArray, texCoords: FloatArray, indices: IntArray, priv
     }
 
     fun render() {
-
         glActiveTexture(GL_TEXTURE0)
         texture.bind()
 

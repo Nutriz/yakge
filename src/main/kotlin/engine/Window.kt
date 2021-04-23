@@ -13,7 +13,8 @@ import org.lwjgl.system.MemoryUtil
 class Window(
     var width: Int = 400,
     var height: Int = 400,
-    var title: String = "Yak Game Engine"
+    var title: String = "Yak Game Engine",
+    val vSync: Boolean = true
 ) {
 
     var windowHandle: Long = 0
@@ -31,18 +32,11 @@ class Window(
         centerTheWindow()
 
         glfwMakeContextCurrent(windowHandle)
-        glfwSwapInterval(1)
+        if (vSync) glfwSwapInterval(1)
         glfwShowWindow(windowHandle)
 
         GL.createCapabilities()
         glEnable(GL_DEPTH_TEST);
-    }
-
-    private fun centerTheWindow() {
-        val primaryMonitor = glfwGetPrimaryMonitor()
-        glfwGetVideoMode(primaryMonitor)?.let { videoMode ->
-            glfwSetWindowPos(windowHandle, (videoMode.width() - width) / 2, (videoMode.height() - height) / 2)
-        }
     }
 
     private fun initGlfw() {
@@ -74,6 +68,14 @@ class Window(
             this.width = width
             this.height = height
             isResized = true
+        }
+    }
+
+    private fun centerTheWindow() {
+        val primaryMonitor = glfwGetPrimaryMonitor()
+        val videoMode = glfwGetVideoMode(primaryMonitor)
+        if (videoMode != null) {
+            glfwSetWindowPos(windowHandle, (videoMode.width() - width) / 2, (videoMode.height() - height) / 2)
         }
     }
 

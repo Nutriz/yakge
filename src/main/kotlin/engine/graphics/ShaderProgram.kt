@@ -1,6 +1,6 @@
 package engine.graphics
 
-import Log
+import engine.utils.Log
 import org.joml.Matrix4f
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.system.MemoryStack

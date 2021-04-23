@@ -1,9 +1,9 @@
 package game
 
-import Log
 import engine.GameItem
 import engine.Window
 import engine.graphics.ShaderProgram
+import engine.utils.Log
 import engine.utils.PerspectiveConfig
 import engine.utils.Transformation
 import java.io.File

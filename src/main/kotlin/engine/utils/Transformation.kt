@@ -1,9 +1,12 @@
 package engine.utils
 
 import com.curiouscreature.kotlin.math.radians
+import engine.Camera
+import engine.GameItem
 import engine.Window
 import org.joml.Matrix4f
 import org.joml.Vector3f
+
 
 data class PerspectiveConfig(
         val fov: Float = radians(60.0f),
@@ -19,7 +22,8 @@ data class PerspectiveConfig(
 object Transformation {
 
     private val projectionMatrix: Matrix4f = Matrix4f()
-    private val worldMatrix: Matrix4f = Matrix4f()
+    private val modelViewMatrix: Matrix4f = Matrix4f()
+    private val viewMatrix: Matrix4f = Matrix4f()
 
     fun getProjectionMatrix(fov: Float, width: Float, height: Float, zNear: Float, zFar: Float): Matrix4f {
         return projectionMatrix.setPerspective(fov, width / height, zNear, zFar)
@@ -31,11 +35,27 @@ object Transformation {
         }
     }
 
-    fun getWorldMatrix(offset: Vector3f, rotation: Vector3f, scale: Float): Matrix4f {
-        return worldMatrix.translation(offset)
-                .rotateX(radians(rotation.x))
-                .rotateY(radians(rotation.y))
-                .rotateZ(radians(rotation.z))
-                .scale(scale)
+    fun getModelViewMatrix(gameItem: GameItem, viewMatrix: Matrix4f): Matrix4f {
+        val rotation = gameItem.rotation
+        modelViewMatrix.set(viewMatrix)
+            .translate(gameItem.position)
+            .rotateX(radians(-rotation.x))
+            .rotateY(radians(-rotation.y))
+            .rotateZ(radians(-rotation.z))
+            .scale(gameItem.scale)
+        return modelViewMatrix
+    }
+
+    fun getViewMatrix(camera: Camera): Matrix4f {
+        val cameraPos = camera.position
+        val cameraRot = camera.rotation
+        viewMatrix.identity()
+        // First do the rotation so camera rotates over its position
+        viewMatrix
+            .rotate(radians(cameraRot.x), Vector3f(1f, 0f, 0f))
+            .rotate(radians(cameraRot.y), Vector3f(0f, 1f, 0f))
+        // Then do the translation
+        viewMatrix.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z)
+        return viewMatrix
     }
 }

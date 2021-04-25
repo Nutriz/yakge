@@ -1,5 +1,6 @@
 package game
 
+import engine.Camera
 import engine.GameItem
 import engine.GameLifecycle
 import engine.Window
@@ -12,6 +13,8 @@ import org.lwjgl.opengl.GL30.*
 class TestGame : GameLifecycle {
 
     private lateinit var renderer: Renderer
+
+    private val camera = Camera()
 
     private lateinit var mesh: Mesh
 
@@ -117,13 +120,23 @@ class TestGame : GameLifecycle {
         )
         val texture = Texture.load("texture/grassblock.png")
         mesh = Mesh(positions, texCoords, indices, texture)
-        val gameItem = GameItem(mesh)
-        gameItem.position.set(0f, 0f, -2f)
+        val gameItem1 = GameItem(mesh)
+        gameItem1.position.set(0f, 0f, -5f)
+        val gameItem2 = GameItem(mesh)
+        gameItem2.position.set(1f, 0f, -4f)
+        val gameItem3 = GameItem(mesh)
+        gameItem3.position.set(1f, 1f, -3f)
 
-        gameItems += gameItem
+        gameItems += gameItem1
+        gameItems += gameItem2
+        gameItems += gameItem3
     }
 
     override fun input(window: Window) {
+
+        if (window.isKeyPressed(GLFW.GLFW_KEY_T)) {
+            camera.movePosition(0.1f, 0f, 0f)
+        }
 
         val gameItem = gameItems.first()
 
@@ -158,7 +171,7 @@ class TestGame : GameLifecycle {
     override fun render(window: Window) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-        renderer.render(window, gameItems)
+        renderer.render(window, camera, gameItems)
     }
 
     override fun cleanup() {

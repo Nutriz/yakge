@@ -1,6 +1,5 @@
 package engine.utils
 
-import com.curiouscreature.kotlin.math.radians
 import engine.Camera
 import engine.GameItem
 import engine.Window
@@ -9,10 +8,10 @@ import org.joml.Vector3f
 
 
 data class PerspectiveConfig(
-        val fov: Float = radians(60.0f),
-        var aspectRatio: Float = 1f,
-        val zNear: Float = 0.1f,
-        val zFar: Float = 1000f
+    val fov: Float = 60.0f.toRadians(),
+    var aspectRatio: Float = 1f,
+    val zNear: Float = 0.1f,
+    val zFar: Float = 1000f
 ) {
     fun updateRatio(window: Window) {
         aspectRatio = window.width.toFloat() / window.height.toFloat()
@@ -39,9 +38,9 @@ object Transformation {
         val rotation = gameItem.rotation
         modelViewMatrix.set(viewMatrix)
             .translate(gameItem.position)
-            .rotateX(radians(-rotation.x))
-            .rotateY(radians(-rotation.y))
-            .rotateZ(radians(-rotation.z))
+            .rotateX(-rotation.x.toRadians())
+            .rotateY(-rotation.y.toRadians())
+            .rotateZ(-rotation.z.toRadians())
             .scale(gameItem.scale)
         return modelViewMatrix
     }
@@ -52,8 +51,8 @@ object Transformation {
         viewMatrix.identity()
         // First do the rotation so camera rotates over its position
         viewMatrix
-            .rotate(radians(cameraRot.x), Vector3f(1f, 0f, 0f))
-            .rotate(radians(cameraRot.y), Vector3f(0f, 1f, 0f))
+            .rotate(cameraRot.x.toRadians(), Vector3f(1f, 0f, 0f))
+            .rotate(cameraRot.y.toRadians(), Vector3f(0f, 1f, 0f))
         // Then do the translation
         viewMatrix.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z)
         return viewMatrix

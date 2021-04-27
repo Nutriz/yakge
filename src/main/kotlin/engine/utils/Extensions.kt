@@ -15,3 +15,7 @@ fun IntArray.toIntBuffer(): IntBuffer {
     intBuffer.put(this).flip()
     return intBuffer
 }
+
+fun Float.toRadians(): Float {
+    return com.curiouscreature.kotlin.math.radians(this)
+}

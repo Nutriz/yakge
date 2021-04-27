@@ -1,6 +1,6 @@
 package engine
 
-import com.curiouscreature.kotlin.math.radians
+import engine.utils.toRadians
 import org.joml.Vector3f
 import kotlin.math.cos
 import kotlin.math.sin
@@ -10,12 +10,12 @@ class Camera(val position: Vector3f = Vector3f(), val rotation: Vector3f = Vecto
 
     fun movePosition(offsetX: Float, offsetY: Float, offsetZ: Float) {
         if (offsetX != 0f) {
-            position.x += sin(radians((rotation.y - 90))) * -1.0f * offsetX
-            position.z += cos(radians((rotation.y - 90))) * offsetX
+            position.x += sin((rotation.y - 90).toRadians()) * -1.0f * offsetX
+            position.z += cos((rotation.y - 90).toRadians()) * offsetX
         }
         if (offsetZ != 0f) {
-            position.x += sin(radians(rotation.y)) * -1.0f * offsetZ
-            position.z += cos(radians(rotation.y)) * offsetZ
+            position.x += sin(rotation.y.toRadians()) * -1.0f * offsetZ
+            position.z += cos(rotation.y.toRadians()) * offsetZ
         }
         position.y += offsetY
     }

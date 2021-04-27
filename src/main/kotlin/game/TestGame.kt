@@ -6,7 +6,9 @@ import engine.GameLifecycle
 import engine.Window
 import engine.graphics.Mesh
 import engine.graphics.Texture
-import org.lwjgl.glfw.GLFW
+import engine.utils.MouseInput
+import org.joml.Vector3f
+import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL30.*
 
 
@@ -15,7 +17,7 @@ class TestGame : GameLifecycle {
     private lateinit var renderer: Renderer
 
     private val camera = Camera()
-
+    private val cameraInc = Vector3f()
     private lateinit var mesh: Mesh
 
     private val gameItems = mutableListOf<GameItem>()
@@ -121,7 +123,7 @@ class TestGame : GameLifecycle {
         val texture = Texture.load("texture/grassblock.png")
         mesh = Mesh(positions, texCoords, indices, texture)
         val gameItem1 = GameItem(mesh)
-        gameItem1.position.set(0f, 0f, -5f)
+        gameItem1.position.set(0f, -0f, -5f)
         val gameItem2 = GameItem(mesh)
         gameItem2.position.set(1f, 0f, -4f)
         val gameItem3 = GameItem(mesh)
@@ -132,40 +134,37 @@ class TestGame : GameLifecycle {
         gameItems += gameItem3
     }
 
-    override fun input(window: Window) {
-
-        if (window.isKeyPressed(GLFW.GLFW_KEY_T)) {
-            camera.movePosition(0.1f, 0f, 0f)
+    override fun input(window: Window, mouseInput: MouseInput) {
+        cameraInc.zero()
+        when {
+            window.isKeyPressed(GLFW_KEY_W) -> cameraInc.z = -1f
+            window.isKeyPressed(GLFW_KEY_S) -> cameraInc.z = 1f
+        }
+        when {
+            window.isKeyPressed(GLFW_KEY_A) -> cameraInc.x = -1f
+            window.isKeyPressed(GLFW_KEY_D) -> cameraInc.x = 1f
+        }
+        when {
+            window.isKeyPressed(GLFW_KEY_Z) -> cameraInc.y = -1f
+            window.isKeyPressed(GLFW_KEY_X) -> cameraInc.y = 1f
         }
 
-        val gameItem = gameItems.first()
-
-        when {
-            window.isKeyPressed(GLFW.GLFW_KEY_X) -> gameItem.scale += 0.01f
-            window.isKeyPressed(GLFW.GLFW_KEY_C) -> gameItem.scale -= 0.01f
-            else -> gameItem.scale
-        }
-
-        when {
-            window.isKeyPressed(GLFW.GLFW_KEY_LEFT) -> gameItem.position.x -= 0.01f
-            window.isKeyPressed(GLFW.GLFW_KEY_RIGHT) -> gameItem.position.x += 0.01f
-            window.isKeyPressed(GLFW.GLFW_KEY_UP) -> gameItem.position.y += 0.01f
-            window.isKeyPressed(GLFW.GLFW_KEY_DOWN) -> gameItem.position.y -= 0.01f
-        }
-
-        when {
-            window.isKeyPressed(GLFW.GLFW_KEY_S) -> {
-                var rotation = gameItem.rotation.z + 1.5f
-                if (rotation > 360) {
-                    rotation = 0f
-                }
-                gameItem.rotation.set(rotation)
-            }
+        if (window.isKeyPressed(GLFW_KEY_SPACE)) {
+            camera.position.zero()
+            camera.rotation.zero()
         }
     }
 
-    override fun update(delta: Float) {
+    override fun update(delta: Float, mouseInput: MouseInput) {
+        // Update camera position
+        camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP)
 
+        // Update camera based on mouse
+        if (mouseInput.isRightButtonPressed) {
+            val relativeDiff = mouseInput.relativeVec
+            // X mouse movement must rotate Y axis, Y mouse movement must rotate X axis
+            camera.moveRotation(relativeDiff.y * MOUSE_SENSITIVITY, relativeDiff.x * MOUSE_SENSITIVITY, 0f)
+        }
     }
 
     override fun render(window: Window) {
@@ -177,5 +176,10 @@ class TestGame : GameLifecycle {
     override fun cleanup() {
         renderer.cleanup()
         mesh.cleanup()
+    }
+
+    companion object {
+        const val CAMERA_POS_STEP = 0.05f
+        const val MOUSE_SENSITIVITY = 0.4f
     }
 }

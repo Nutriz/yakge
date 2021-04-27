@@ -1,6 +1,7 @@
 package engine
 
 import engine.utils.Log
+import engine.utils.MouseInput
 import engine.utils.Timer
 import org.lwjgl.Version
 import org.lwjgl.glfw.Callbacks.glfwFreeCallbacks
@@ -15,7 +16,7 @@ class GameEngine(
 ) {
 
     private val window = Window(width, height, title)
-
+    private val mouseInput = MouseInput(window)
     private val targetFps = 60
     private val targetUps = 30
 
@@ -59,7 +60,7 @@ class GameEngine(
     }
 
     private fun update() {
-        game.update(updateInterval)
+        game.update(updateInterval, mouseInput)
     }
 
     private fun sync(loopStartTime: Double) {
@@ -70,7 +71,8 @@ class GameEngine(
     }
 
     private fun input() {
-        game.input(window)
+        mouseInput.input()
+        game.input(window, mouseInput)
     }
 
     private fun render() {

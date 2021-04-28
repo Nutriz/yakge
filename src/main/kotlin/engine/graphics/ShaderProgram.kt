@@ -2,6 +2,7 @@ package engine.graphics
 
 import engine.utils.Log
 import org.joml.Matrix4f
+import org.joml.Vector3f
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.system.MemoryStack
 import kotlin.properties.Delegates
@@ -76,6 +77,12 @@ class ShaderProgram(
     fun setUniform(uniformName: String, value: Int) {
             uniforms[uniformName]?.let { uniformLocation ->
                 glUniform1i(uniformLocation, value)
+        }
+    }
+
+    fun setUniform(uniformName: String, value: Vector3f) {
+        uniforms[uniformName]?.let { uniformLocation ->
+            glUniform3f(uniformLocation, value.x, value.y, value.z)
         }
     }
 

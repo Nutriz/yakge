@@ -120,8 +120,9 @@ class TestGame : GameLifecycle {
                 // Back face
                 4, 6, 7, 5, 4, 7,
         )
-        val texture = Texture.load("texture/grassblock.png")
-        mesh = Mesh(positions, texCoords, indices, texture)
+
+        mesh = Mesh(positions, texCoords, floatArrayOf(), indices)
+        mesh.texture = Texture.load("texture/grassblock.png")
         val gameItem1 = GameItem(mesh)
         gameItem1.position.set(0f, -0f, -5f)
         val gameItem2 = GameItem(mesh)

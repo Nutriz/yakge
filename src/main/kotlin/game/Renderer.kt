@@ -25,6 +25,8 @@ class Renderer(window: Window) {
         shaderProgram.createUniform("projectionMatrix")
         shaderProgram.createUniform("modelViewMatrix")
 
+        shaderProgram.createUniform("colour")
+        shaderProgram.createUniform("useColour")
         shaderProgram.createUniform("texture_sampler")
     }
 
@@ -56,6 +58,11 @@ class Renderer(window: Window) {
         items.forEach { item ->
             val modelViewMatrix = Transformation.getModelViewMatrix(item, viewMatrix)
             shaderProgram.setUniform("modelViewMatrix", modelViewMatrix)
+
+            val useColour = if (item.mesh.texture == null) 1 else 0
+            shaderProgram.setUniform("useColour", useColour)
+            shaderProgram.setUniform("colour", item.colour)
+
             item.mesh.render()
         }
     }

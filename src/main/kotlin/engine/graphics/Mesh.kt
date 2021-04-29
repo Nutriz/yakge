@@ -1,5 +1,6 @@
 package engine.graphics
 
+import engine.utils.Log
 import engine.utils.toFloatBuffer
 import engine.utils.toIntBuffer
 import org.lwjgl.opengl.GL30.*
@@ -17,18 +18,20 @@ class Mesh(
 ) {
 
     private var vaoId by Delegates.notNull<Int>()
-    private var vboId by Delegates.notNull<Int>()
+    private var posVboId by Delegates.notNull<Int>()
     private var texCoordsVboId by Delegates.notNull<Int>()
     private var idxVboId by Delegates.notNull<Int>()
     private var normalsVboId by Delegates.notNull<Int>()
 
-    private val vertexCount = indices.size
+    val vertexCount = indices.size
 
     init {
         val positionsBuffer = positions.toFloatBuffer()
         val texCoordsBuffer = texCoords.toFloatBuffer()
         val normalsBuffer = normals.toFloatBuffer()
         val indicesBuffer = indices.toIntBuffer()
+
+        Log.debug("Mesh in memory size ${ (positionsBuffer.capacity() + texCoordsBuffer.capacity() + normalsBuffer.capacity() + indicesBuffer.capacity()) * 4 * 0.001} kb")
 
         createVao()
         createPosVbo(positionsBuffer)
@@ -46,8 +49,8 @@ class Mesh(
     }
 
     private fun createPosVbo(buffer: FloatBuffer) {
-        vboId = glGenBuffers()
-        glBindBuffer(GL_ARRAY_BUFFER, vboId)
+        posVboId = glGenBuffers()
+        glBindBuffer(GL_ARRAY_BUFFER, posVboId)
         glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW)
         glEnableVertexAttribArray(0)
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0)
@@ -106,7 +109,7 @@ class Mesh(
 
     private fun deleteVbos() {
         glBindBuffer(GL_ARRAY_BUFFER, 0)
-        glDeleteBuffers(vboId)
+        glDeleteBuffers(posVboId)
         glDeleteBuffers(texCoordsVboId)
         glDeleteBuffers(normalsVboId)
         glDeleteBuffers(idxVboId)

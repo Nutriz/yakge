@@ -41,6 +41,7 @@ class Renderer(window: Window) {
 
         val viewMatrix = Transformation.getViewMatrix(camera)
         renderItems(items, viewMatrix)
+        Log.debug("${items.sumBy { it.mesh.vertexCount / 3 }} rendered triangles")
 
         shaderProgram.unbind()
     }

@@ -2,7 +2,7 @@ import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
 }
 
 group = "fr.nutriz"
@@ -22,7 +22,7 @@ repositories {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "16"
 }
 
 dependencies {
@@ -49,4 +49,14 @@ dependencies {
     runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = lwjglNatives)
     implementation("org.joml", "joml", jomlVersion)
     testImplementation(kotlin("test-junit"))
+}
+
+// fat jar to use with RenderDoc
+tasks.withType<Jar>  {
+    manifest {
+        attributes["Main-Class"] = "MainKt"
+    }
+    from(configurations.compileClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
+        .exclude("**/module-info.class")
+        .exclude("**/INDEX.LIST")
 }

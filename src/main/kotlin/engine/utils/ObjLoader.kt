@@ -54,7 +54,7 @@ object ObjLoader {
         facesData: MutableList<Face>,
         usePosForIdx: Boolean = true
     ): Mesh {
-        Log.debug("Mesh reordering with positions: $usePosForIdx")
+        Log.info("Mesh reordering with positions: $usePosForIdx")
         val arraySize = if (usePosForIdx) positionsData.size else texCoordsData.size
         val positions = FloatArray(arraySize * 3)
         val texCoords = FloatArray(arraySize * 2)

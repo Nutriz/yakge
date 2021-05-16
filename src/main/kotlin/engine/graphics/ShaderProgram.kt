@@ -3,6 +3,7 @@ package engine.graphics
 import engine.utils.Log
 import org.joml.Matrix4f
 import org.joml.Vector3f
+import org.joml.Vector4f
 import org.lwjgl.opengl.GL20.*
 import org.lwjgl.system.MemoryStack
 import kotlin.properties.Delegates
@@ -30,7 +31,7 @@ class ShaderProgram(
     private fun createProgram() {
         programId = glCreateProgram()
         if (programId == 0) {
-            throw Exception("Could not create Shader");
+            throw Exception("Could not create Shader")
         }
     }
 
@@ -45,7 +46,7 @@ class ShaderProgram(
     private fun createShader(shaderCode: String, shaderType: Int): Int {
         val shaderId = glCreateShader(shaderType)
         if (shaderId == 0) {
-            throw Exception("Error creating shader. Type: $shaderType");
+            throw Exception("Error creating shader. Type: $shaderType")
         }
 
         glShaderSource(shaderId, shaderCode)
@@ -59,9 +60,10 @@ class ShaderProgram(
     }
 
     fun createUniform(uniformName: String) {
+        Log.info("createUniform: Creating uniform: $uniformName")
         val uniformLocation = glGetUniformLocation(programId, uniformName)
         if (uniformLocation < 0) {
-            throw Exception("Could not find uniform: $uniformName")
+            Log.error("createUniform: Can't create uniform '$uniformName', not found/used in shader code")
         }
         uniforms[uniformName] = uniformLocation
     }
@@ -74,9 +76,22 @@ class ShaderProgram(
         }
     }
 
+    fun setUniform(uniformName: String, value: Boolean) {
+        uniforms[uniformName]?.let { uniformLocation ->
+            val intBoolean = if (value) 1 else 0
+            glUniform1i(uniformLocation, intBoolean)
+        }
+    }
+
     fun setUniform(uniformName: String, value: Int) {
             uniforms[uniformName]?.let { uniformLocation ->
                 glUniform1i(uniformLocation, value)
+        }
+    }
+
+    fun setUniform(uniformName: String, value: Float) {
+            uniforms[uniformName]?.let { uniformLocation ->
+                glUniform1f(uniformLocation, value)
         }
     }
 
@@ -86,6 +101,23 @@ class ShaderProgram(
         }
     }
 
+    fun setUniform(uniformName: String, value: Vector4f) {
+        uniforms[uniformName]?.let { uniformLocation ->
+            glUniform4f(uniformLocation, value.x, value.y, value.z, value.w)
+        }
+    }
+
+    fun setUniform(uniformName: String, pointLight: PointLight) {
+        setUniform("$uniformName.color", pointLight.color)
+        setUniform("$uniformName.position", pointLight.position)
+        setUniform("$uniformName.intensity", pointLight.intensity)
+    }
+
+    fun setUniform(uniformName: String, material: Material) {
+        setUniform("$uniformName.ambient", material.ambient)
+        setUniform("$uniformName.hasTexture", material.hasTexture)
+        setUniform("$uniformName.unshaded", material.unshaded)
+    }
     private fun link() {
         glLinkProgram(programId)
 
@@ -96,7 +128,7 @@ class ShaderProgram(
 
         glValidateProgram(programId)
         if (glGetProgrami(programId, GL_VALIDATE_STATUS) == 0) {
-            Log.error("Warning validating Shader code: " + glGetProgramInfoLog(programId, 1024));
+            Log.error("Warning validating Shader code: " + glGetProgramInfoLog(programId, 1024))
         }
     }
 
@@ -117,7 +149,7 @@ class ShaderProgram(
 
     private fun checkShaderError(shaderId: Int) {
         if (glGetShaderi(shaderId, GL_COMPILE_STATUS) == 0) {
-            throw Exception("Error compiling Shader code: ${glGetShaderInfoLog(shaderId, 1024)}");
+            throw Exception("Error compiling Shader code: ${glGetShaderInfoLog(shaderId, 1024)}")
         }
     }
 }

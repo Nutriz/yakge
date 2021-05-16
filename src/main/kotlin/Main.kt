@@ -3,8 +3,8 @@ import game.TestGame
 
 fun main() {
     GameEngine(
-        width = 900,
-        height = 600,
+        width = 1200,
+        height = 700,
         game = TestGame()
     ).start()
 }

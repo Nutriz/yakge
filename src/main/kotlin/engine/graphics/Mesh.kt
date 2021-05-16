@@ -14,6 +14,7 @@ class Mesh(
     texCoords: FloatArray,
     normals: FloatArray,
     indices: IntArray,
+    var material: Material = Material(),
     var texture: Texture? = null
 ) {
 

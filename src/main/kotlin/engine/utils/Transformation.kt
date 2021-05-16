@@ -45,6 +45,17 @@ object Transformation {
         return modelViewMatrix
     }
 
+    fun getModelMatrix(gameItem: GameItem): Matrix4f {
+        val rotation = gameItem.rotation
+        val mat = Matrix4f()
+            .translate(gameItem.position)
+            .rotateX(-rotation.x.toRadians())
+            .rotateY(-rotation.y.toRadians())
+            .rotateZ(-rotation.z.toRadians())
+            .scale(gameItem.scale)
+        return mat
+    }
+
     fun getViewMatrix(camera: Camera): Matrix4f {
         val cameraPos = camera.position
         val cameraRot = camera.rotation

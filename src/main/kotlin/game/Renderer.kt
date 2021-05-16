@@ -3,6 +3,7 @@ package game
 import engine.Camera
 import engine.GameItem
 import engine.Window
+import engine.graphics.PointLight
 import engine.graphics.ShaderProgram
 import engine.utils.Log
 import engine.utils.PerspectiveConfig
@@ -24,13 +25,22 @@ class Renderer(window: Window) {
         Log.info(perspectiveConfig)
         shaderProgram.createUniform("projectionMatrix")
         shaderProgram.createUniform("modelViewMatrix")
+        shaderProgram.createUniform("modelMatrix")
 
-        shaderProgram.createUniform("colour")
-        shaderProgram.createUniform("useColour")
-        shaderProgram.createUniform("texture_sampler")
+        shaderProgram.createUniform("textureSampler")
+
+        // light
+        shaderProgram.createUniform("light.color")
+        shaderProgram.createUniform("light.position")
+        shaderProgram.createUniform("light.intensity")
+
+        // material
+        shaderProgram.createUniform("material.ambient")
+        shaderProgram.createUniform("material.hasTexture")
+        shaderProgram.createUniform("material.unshaded")
     }
 
-    fun render(window: Window, camera: Camera, items: List<GameItem>) {
+    fun render(window: Window, camera: Camera, items: List<GameItem>, pointLight: PointLight) {
         perspectiveConfig.updateRatio(window)
 
         shaderProgram.bind()
@@ -40,8 +50,8 @@ class Renderer(window: Window) {
         enableTextureSampler(0)
 
         val viewMatrix = Transformation.getViewMatrix(camera)
-        renderItems(items, viewMatrix)
-        Log.debug("${items.sumBy { it.mesh.vertexCount / 3 }} rendered triangles")
+        renderItems(items, viewMatrix, pointLight)
+//        Log.info("${items.sumBy { it.mesh.vertexCount / 3 }} rendered triangles")
 
         shaderProgram.unbind()
     }
@@ -52,17 +62,17 @@ class Renderer(window: Window) {
     }
 
     private fun enableTextureSampler(unitIndex: Int) {
-        shaderProgram.setUniform("texture_sampler", unitIndex)
+        shaderProgram.setUniform("textureSampler", unitIndex)
     }
 
-    private fun renderItems(items: List<GameItem>, viewMatrix: Matrix4f) {
-        items.forEach { item ->
+    private fun renderItems(items: List<GameItem>, viewMatrix: Matrix4f, pointLight: PointLight) {
+        items.forEachIndexed { index, item ->
             val modelViewMatrix = Transformation.getModelViewMatrix(item, viewMatrix)
+            shaderProgram.setUniform("modelMatrix", Transformation.getModelMatrix(item))
             shaderProgram.setUniform("modelViewMatrix", modelViewMatrix)
 
-            val useColour = if (item.mesh.texture == null) 1 else 0
-            shaderProgram.setUniform("useColour", useColour)
-            shaderProgram.setUniform("colour", item.colour)
+            shaderProgram.setUniform("light", pointLight)
+            shaderProgram.setUniform("material", item.mesh.material)
 
             item.mesh.render()
         }

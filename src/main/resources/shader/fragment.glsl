@@ -3,13 +3,15 @@ precision mediump float;
 
 in vec3 mvVertexPos;
 in vec3 mvVertexNormal;
+in vec2 outTexCoord;
+
 out vec4 fragColor;
 
-struct Material
+struct Attenuation
 {
-    vec4 ambient;
-    int hasTexture;
-    int unshaded;
+    float constant;
+    float linear;
+    float exponent;
 };
 
 struct PointLight
@@ -17,37 +19,65 @@ struct PointLight
     vec3 color;
     vec3 position; // Light position is assumed to be in view coordinates
     float intensity;
+    Attenuation attenuation;
+};
+
+struct Material
+{
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
+    float reflectance;
+    int hasTexture;
+    int unshaded;
 };
 
 uniform sampler2D textureSampler;
+uniform vec3 ambientLight;
 uniform PointLight light;
+uniform float specularPower;
 uniform Material material;
 
 void main()
 {
+    // Setup color if material textured or not
+    vec4 ambientColor;
+    vec4 diffuseColor;
+    vec4 specularColor;
+    if (material.hasTexture == 1) {
+        ambientColor = texture(textureSampler, outTexCoord);
+        diffuseColor = ambientColor;
+        specularColor = ambientColor;
+    } else {
+        ambientColor = material.ambient;
+        diffuseColor = material.diffuse;
+        specularColor = material.specular;
+    }
 
-    // Calculate the ambient color as a percentage of the material color
-    float ambientPercent = 0.5;
-    vec3 ambientColor = material.ambient.rgb * light.intensity * ambientPercent;
+    // Diffuse
+    vec3 lightDirection = light.position - mvVertexPos;
+    vec3 toLightSource  = normalize(lightDirection);
 
-    // Calculate a vector from the fragment location to the light source
-    vec3 to_light = light.position - mvVertexPos;
-    to_light = normalize(to_light);
+    float diffuseFactor = max(dot(mvVertexNormal, toLightSource), 0.0);
+    diffuseColor = diffuseColor * vec4(light.color, 1.0) * light.intensity * diffuseFactor;
 
-    // The vertex's normal vector is being interpolated across the primitive
-    // which can make it un-normalized. So normalize the vertex's normal vector.
-    vec3 vertex_normal = normalize(mvVertexNormal);
+    // Specular: Cspec = (Sspec ⊗ Mspec ) (v · r) Mgls
+    // specular color = (light.color * material.specular) * (fromPosToview · lightReflection) * material.reflectance
+    vec3 toCamDirection = normalize(-mvVertexPos);
+    vec3 fromLightSource = -toLightSource;
+    vec3 reflectedLight = normalize(reflect(fromLightSource, mvVertexNormal));
+    float specularFactor = max(dot(toCamDirection, reflectedLight), 0.0);
+    specularFactor = pow(specularFactor, specularPower);
+    specularColor = specularColor * specularFactor * material.reflectance * vec4(light.color, 1);
 
-    // Calculate the cosine of the angle between the vertex's normal vector and the vector going to the light.
-    float cos_angle = dot(vertex_normal, to_light);
-    cos_angle = clamp(cos_angle, 0.0, 1.0);
-
-    // Scale the color of this fragment based on its angle to the light.
-    vec3 diffuseColor = material.ambient.rgb * cos_angle * light.intensity;
+    float distance = length(lightDirection);
+    float attenuationInv = light.attenuation.constant + light.attenuation.linear * distance + light.attenuation.exponent * distance * distance;
 
     if (material.unshaded == 1) {
-        fragColor = vec4(material.ambient.rgb, 1);
+        fragColor = ambientColor;
     } else {
-        fragColor = vec4(ambientColor + diffuseColor, 1);
+        vec4 diffuseSpecularComp = (diffuseColor + specularColor) / attenuationInv;
+
+        fragColor = ambientColor * light.intensity * vec4(ambientLight, 1) + diffuseSpecularComp;
     }
 }

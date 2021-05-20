@@ -15,7 +15,6 @@ class Mesh(
     normals: FloatArray,
     indices: IntArray,
     var material: Material = Material(),
-    var texture: Texture? = null
 ) {
 
     private var vaoId by Delegates.notNull<Int>()
@@ -85,9 +84,9 @@ class Mesh(
     }
 
     fun render() {
-        if (texture != null) {
+        if (material.texture != null) {
             glActiveTexture(GL_TEXTURE0)
-            texture?.bind()
+            material.texture?.bind()
         }
 
         glBindVertexArray(vaoId)
@@ -99,7 +98,7 @@ class Mesh(
         glDisableVertexAttribArray(0)
         glDisableVertexAttribArray(1)
         deleteVbos()
-        texture?.cleanup()
+        material.texture?.cleanup()
         deleteVao()
     }
 

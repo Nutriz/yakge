@@ -6,6 +6,7 @@ import engine.GameLifecycle
 import engine.Window
 import engine.graphics.Material
 import engine.graphics.PointLight
+import engine.graphics.Texture
 import engine.utils.Color
 import engine.utils.MouseInput
 import engine.utils.ObjLoader
@@ -21,10 +22,10 @@ class TestGame : GameLifecycle {
 
     private val camera = Camera()
     private val cameraInc = Vector3f()
+    private val ambientLight = Vector3f(0.3f, 0.3f, 0.3f)
     private val light = PointLight(
         color = Vector3f(1f, 1f, 1f),
-        position = Vector3f(0f, 3f, -2f),
-        intensity = 0.5f
+        position = Vector3f(0f, 3f, -2f)
     )
     private val lightInc = Vector3f()
 
@@ -42,11 +43,16 @@ class TestGame : GameLifecycle {
         val map = GameItem(mapMesh)
         map.position.set(0f, 0f, -6f)
 
-        val ironmanMesh = ObjLoader.loadMesh("model/ironman.obj")
-        val ironman = GameItem(ironmanMesh)
-        ironman.position.set(4f, 0f, -5f)
-        ironman.rotation.set(0f, 0f, 0f)
-        ironman.scale *= 0.02f
+        val cubeMesh = ObjLoader.loadMesh("model/cube.obj")
+        cubeMesh.material = Material(ambient = Color.white, texture = Texture.load("texture/grassblock.png"))
+        val cube = GameItem(cubeMesh, scale = 0.5f)
+        cube.position.set(4f, 0.5f, -2f)
+
+//        val ironmanMesh = ObjLoader.loadMesh("model/ironman.obj")
+//        val ironman = GameItem(ironmanMesh)
+//        ironman.position.set(4f, 0f, -5f)
+//        ironman.rotation.set(0f, 0f, 0f)
+//        ironman.scale *= 0.02f
 
         initRgbSphere()
 
@@ -56,7 +62,8 @@ class TestGame : GameLifecycle {
         light.scale *= 0.05f
 
         gameItems += map
-        gameItems += ironman
+        gameItems += cube
+//        gameItems += ironman
         gameItems += light
     }
 
@@ -138,14 +145,14 @@ class TestGame : GameLifecycle {
             camera.moveRotation(relativeDiff.y * MOUSE_SENSITIVITY, relativeDiff.x * MOUSE_SENSITIVITY, 0f)
         }
 
-        gameItems.first { it.mesh.vertexCount > 300000 }.rotation.add(0f, 1f, 0f)
+//        gameItems.first { it.mesh.vertexCount > 300000 }.rotation.add(0f, 1f, 0f)
         gameItems.last().position.set(light.position)
     }
 
     override fun render(window: Window) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-        renderer?.render(window, camera, gameItems, light)
+        renderer?.render(window, camera, gameItems, ambientLight, light)
     }
 
     override fun cleanup() {

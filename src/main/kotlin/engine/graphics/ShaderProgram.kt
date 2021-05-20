@@ -111,12 +111,18 @@ class ShaderProgram(
         setUniform("$uniformName.color", pointLight.color)
         setUniform("$uniformName.position", pointLight.position)
         setUniform("$uniformName.intensity", pointLight.intensity)
+        setUniform("$uniformName.attenuation.constant", pointLight.attenuation.constant)
+        setUniform("$uniformName.attenuation.linear", pointLight.attenuation.linear)
+        setUniform("$uniformName.attenuation.exponent", pointLight.attenuation.exponent)
     }
 
     fun setUniform(uniformName: String, material: Material) {
         setUniform("$uniformName.ambient", material.ambient)
-        setUniform("$uniformName.hasTexture", material.hasTexture)
+        setUniform("$uniformName.diffuse", material.diffuse)
+        setUniform("$uniformName.specular", material.specular)
+        setUniform("$uniformName.reflectance", material.reflectance)
         setUniform("$uniformName.unshaded", material.unshaded)
+        setUniform("$uniformName.hasTexture", material.hasTexture)
     }
     private fun link() {
         glLinkProgram(programId)

@@ -8,4 +8,5 @@ object Color {
     val blue = Vector4f(0f, 0f, 1f, 1f)
     val white = Vector4f(1f, 1f, 1f, 1f)
     val black = Vector4f(0f, 0f, 0f, 1f)
+    val grey = Vector4f(0.5f, 0.5f, 0.5f, 1f)
 }

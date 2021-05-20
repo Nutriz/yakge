@@ -5,6 +5,7 @@ import engine.GameItem
 import engine.Window
 import org.joml.Matrix4f
 import org.joml.Vector3f
+import org.joml.Vector4f
 
 
 data class PerspectiveConfig(
@@ -45,17 +46,6 @@ object Transformation {
         return modelViewMatrix
     }
 
-    fun getModelMatrix(gameItem: GameItem): Matrix4f {
-        val rotation = gameItem.rotation
-        val mat = Matrix4f()
-            .translate(gameItem.position)
-            .rotateX(-rotation.x.toRadians())
-            .rotateY(-rotation.y.toRadians())
-            .rotateZ(-rotation.z.toRadians())
-            .scale(gameItem.scale)
-        return mat
-    }
-
     fun getViewMatrix(camera: Camera): Matrix4f {
         val cameraPos = camera.position
         val cameraRot = camera.rotation
@@ -67,5 +57,10 @@ object Transformation {
         // Then do the translation
         viewMatrix.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z)
         return viewMatrix
+    }
+
+    fun worldToView(position: Vector3f): Vector3f {
+        val viewPos = Vector4f(position, 1f).mul(viewMatrix)
+        return Vector3f(viewPos.x, viewPos.y, viewPos.z)
     }
 }

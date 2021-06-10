@@ -2,6 +2,7 @@ package game
 
 import engine.Camera
 import engine.GameItem
+import engine.Hud
 import engine.Window
 import engine.graphics.PointLight
 import engine.graphics.ShaderProgram
@@ -12,15 +13,21 @@ import org.joml.Matrix4f
 import org.joml.Vector3f
 import java.io.File
 
+
 class Renderer(window: Window) {
 
     private val perspectiveConfig = PerspectiveConfig()
 
     private val specularPower = 10f
 
-    private val shaderProgram: ShaderProgram = ShaderProgram(
+    private val shaderProgram = ShaderProgram(
         File("shader/vertex.glsl").readText(),
         File("shader/fragment.glsl").readText()
+    )
+
+    private val hudShaderProgram = ShaderProgram(
+        File("shader/hud_vertex.glsl").readText(),
+        File("shader/hud_fragment.glsl").readText()
     )
 
     init {
@@ -49,16 +56,38 @@ class Renderer(window: Window) {
         shaderProgram.createUniform("material.reflectance")
         shaderProgram.createUniform("material.unshaded")
         shaderProgram.createUniform("material.hasTexture")
+
+        hudShaderProgram.createUniform("projModelMatrix")
+        hudShaderProgram.createUniform("hasTexture")
+        hudShaderProgram.createUniform("color")
     }
 
-    fun render(window: Window, camera: Camera, items: List<GameItem>, ambientLight: Vector3f, pointLight: PointLight) {
+    fun render(
+        window: Window,
+        camera: Camera,
+        items: List<GameItem>,
+        ambientLight: Vector3f,
+        pointLight: PointLight,
+        hud: Hud
+    ) {
+        renderScene(window, camera, ambientLight, pointLight, items)
+        renderHud(window, hud)
+    }
+
+    private fun renderScene(
+        window: Window,
+        camera: Camera,
+        ambientLight: Vector3f,
+        pointLight: PointLight,
+        items: List<GameItem>
+    ) {
         perspectiveConfig.updateRatio(window)
 
         shaderProgram.bind()
 
         updateProjectionMatrix()
 
-        enableTextureSampler(0)
+        shaderProgram.setUniform("textureSampler", 0)
 
         val viewMatrix = Transformation.getViewMatrix(camera)
         shaderProgram.setUniform("ambientLight", ambientLight)
@@ -69,18 +98,31 @@ class Renderer(window: Window) {
         shaderProgram.setUniform("light", currPointLight)
 
         renderItems(items, viewMatrix)
-//        Log.info("${items.sumBy { it.mesh.vertexCount / 3 }} rendered triangles")
+        //        Log.info("${items.sumBy { it.mesh.vertexCount / 3 }} rendered triangles")
 
         shaderProgram.unbind()
+    }
+
+    private fun renderHud(window: Window, hud: Hud) {
+        hudShaderProgram.bind()
+
+        val ortho = Transformation.getOrthoProjectionMatrix(0f, window.width.toFloat(), window.height.toFloat(), 0f)
+
+        hud.gameItems.forEach { item ->
+            val projModelMatrix = Transformation.getOrtoProjModelMatrix(item, ortho)
+            hudShaderProgram.setUniform("projModelMatrix", projModelMatrix)
+            val hasTexture = if(item.mesh.material.hasTexture) 1 else 0
+            hudShaderProgram.setUniform("hasTexture", hasTexture)
+            hudShaderProgram.setUniform("color", item.mesh.material.diffuse)
+            item.mesh.render()
+        }
+
+        hudShaderProgram.unbind()
     }
 
     private fun updateProjectionMatrix() {
         val projectionMatrix = Transformation.getProjectionMatrix(perspectiveConfig)
         shaderProgram.setUniform("projectionMatrix", projectionMatrix)
-    }
-
-    private fun enableTextureSampler(unitIndex: Int) {
-        shaderProgram.setUniform("textureSampler", unitIndex)
     }
 
     private fun renderItems(items: List<GameItem>, viewMatrix: Matrix4f) {

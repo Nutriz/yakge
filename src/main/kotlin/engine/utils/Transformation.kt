@@ -22,6 +22,7 @@ data class PerspectiveConfig(
 object Transformation {
 
     private val projectionMatrix: Matrix4f = Matrix4f()
+    private val orthoMatrix: Matrix4f = Matrix4f()
     private val modelViewMatrix: Matrix4f = Matrix4f()
     private val viewMatrix: Matrix4f = Matrix4f()
 
@@ -62,5 +63,25 @@ object Transformation {
     fun worldToView(position: Vector3f): Vector3f {
         val viewPos = Vector4f(position, 1f).mul(viewMatrix)
         return Vector3f(viewPos.x, viewPos.y, viewPos.z)
+    }
+
+    fun getOrthoProjectionMatrix(left: Float, right: Float, bottom: Float, top: Float): Matrix4f {
+        orthoMatrix.identity()
+        orthoMatrix.setOrtho2D(left, right, bottom, top)
+        return orthoMatrix
+    }
+
+    fun getOrtoProjModelMatrix(textItem: GameItem, orthoMatrix: Matrix4f?): Matrix4f {
+        val rotation = textItem.rotation
+        val modelMatrix = Matrix4f()
+        modelMatrix.identity()
+            .translate(textItem.position)
+            .rotateX(-rotation.x.toRadians())
+            .rotateY(-rotation.y.toRadians())
+            .rotateZ(-rotation.z.toRadians())
+            .scale(textItem.scale)
+        val orthoMatrixCurr = Matrix4f(orthoMatrix)
+        orthoMatrixCurr.mul(modelMatrix)
+        return orthoMatrixCurr
     }
 }

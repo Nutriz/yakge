@@ -6,7 +6,7 @@ import org.joml.Vector4f
 
 data class Material(
     val ambient: Vector4f = getRandomColor(),
-    val diffuse: Vector4f = ambient,
+    var diffuse: Vector4f = ambient,
     val specular: Vector4f = Color.white,
     var reflectance: Float = 1f,
     var unshaded: Boolean = false,

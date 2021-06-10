@@ -94,7 +94,13 @@ class Mesh(
         glBindVertexArray(0)
     }
 
-    fun cleanup() {
+    fun deleteBuffers() {
+        glDisableVertexAttribArray(0)
+        deleteVbos()
+        deleteVao()
+    }
+
+    fun cleanUp() {
         glDisableVertexAttribArray(0)
         glDisableVertexAttribArray(1)
         deleteVbos()

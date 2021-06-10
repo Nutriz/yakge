@@ -1,9 +1,6 @@
 package game
 
-import engine.Camera
-import engine.GameItem
-import engine.GameLifecycle
-import engine.Window
+import engine.*
 import engine.graphics.Material
 import engine.graphics.PointLight
 import engine.graphics.Texture
@@ -30,6 +27,7 @@ class TestGame : GameLifecycle {
     private val lightInc = Vector3f()
 
     private val gameItems = mutableListOf<GameItem>()
+    private lateinit var hud: GameHud
 
     override fun init(window: Window) {
         renderer = Renderer(window)
@@ -40,49 +38,55 @@ class TestGame : GameLifecycle {
 
         val mapMesh = ObjLoader.loadMesh("model/map.obj")
         mapMesh.material = Material(ambient = Color.white)
-        val map = GameItem(mapMesh)
+        val map = GameItem().apply { mesh = mapMesh }
         map.position.set(0f, 0f, -6f)
 
         val cubeMesh = ObjLoader.loadMesh("model/cube.obj")
-        cubeMesh.material = Material(ambient = Color.white, texture = Texture.load("texture/grassblock.png"))
-        val cube = GameItem(cubeMesh, scale = 0.5f)
+        cubeMesh.material = Material(ambient = Color.white, texture = Texture.loadFromFile("texture/grassblock.png"))
+        val cube = GameItem().apply { mesh = cubeMesh }
+        cube.scale = 0.5f
         cube.position.set(4f, 0.5f, -2f)
 
-//        val ironmanMesh = ObjLoader.loadMesh("model/ironman.obj")
-//        val ironman = GameItem(ironmanMesh)
-//        ironman.position.set(4f, 0f, -5f)
-//        ironman.rotation.set(0f, 0f, 0f)
-//        ironman.scale *= 0.02f
+        val ironmanMesh = ObjLoader.loadMesh("model/ironman.obj")
+        val ironman = GameItem().apply { mesh = ironmanMesh }
+        ironman.position.set(4f, 0f, -5f)
+        ironman.rotation.set(0f, 0f, 0f)
+        ironman.scale *= 0.02f
 
         initRgbSphere()
 
         val lightMesh = ObjLoader.loadMesh("model/sphere.obj")
         lightMesh.material = Material(Vector4f(1f, 1f, 1f, 1f), unshaded = true)
-        val light = GameItem(lightMesh)
+        val light = GameItem().apply { mesh = lightMesh }
         light.scale *= 0.05f
 
         gameItems += map
         gameItems += cube
 //        gameItems += ironman
         gameItems += light
+
+        hud = GameHud()
+        val item = TextItem("A", GameHud.DefaultFontTexture)
+        item.mesh.material.diffuse = Color.white
+        hud.gameItems += item
     }
 
     private fun initRgbSphere() {
         val meshR = ObjLoader.loadMesh("model/sphere.obj")
         meshR.material = Material(Color.red)
-        val gameItemR = GameItem(meshR)
+        val gameItemR = GameItem().apply { mesh =  meshR }
         gameItemR.position.set(1f, 1f, 0f)
         gameItemR.scale = 0.5f
 
         val meshG = ObjLoader.loadMesh("model/sphere.obj")
         meshG.material = Material(Color.green)
-        val gameItemG = GameItem(meshG)
+        val gameItemG = GameItem().apply { mesh =  meshG }
         gameItemG.position.set(2f, 1f, 0f)
         gameItemG.scale = 0.5f
 
         val meshB = ObjLoader.loadMesh("model/sphere.obj")
         meshB.material = Material(Color.blue)
-        val gameItemB = GameItem(meshB)
+        val gameItemB = GameItem().apply { mesh =  meshB }
         gameItemB.position.set(3f, 1f, 0f)
         gameItemB.scale = 0.5f
 
@@ -152,14 +156,15 @@ class TestGame : GameLifecycle {
     override fun render(window: Window) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-        renderer?.render(window, camera, gameItems, ambientLight, light)
+        renderer?.render(window, camera, gameItems, ambientLight, light, hud)
     }
 
     override fun cleanup() {
         renderer?.cleanup()
         gameItems.forEach { item ->
-            item.mesh.cleanup()
+            item.mesh.cleanUp()
         }
+        hud.cleanup()
     }
 
     companion object {

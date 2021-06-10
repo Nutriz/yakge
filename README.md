@@ -11,3 +11,9 @@ A little game engine made in Kotlin on top of LWJGL. Main purpose is to write cl
 * refactor - code changes that neither fixes a bug or adds a feature
 * test - everything related to testing
 * chore - updating build tasks, package manager configs, etc
+
+## Debug with RenderDoc
+
+* change all `runtimeOnly` by `implementation`
+* run `jar` gradle task
+* copy resources from `/build/resources/main` to `libs`

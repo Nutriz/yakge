@@ -5,8 +5,7 @@ import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.GL_DEPTH_TEST
-import org.lwjgl.opengl.GL11.glEnable
+import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryUtil
 
 
@@ -36,7 +35,11 @@ class Window(
         glfwShowWindow(windowHandle)
 
         GL.createCapabilities()
-        glEnable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST)
+
+        // Support for transparency
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
     }
 
     private fun initGlfw() {

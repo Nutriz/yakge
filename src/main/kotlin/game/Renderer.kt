@@ -4,13 +4,16 @@ import engine.Camera
 import engine.GameItem
 import engine.Hud
 import engine.Window
+import engine.graphics.DirectionalLight
 import engine.graphics.PointLight
 import engine.graphics.ShaderProgram
 import engine.utils.Log
 import engine.utils.PerspectiveConfig
 import engine.utils.Transformation
+import engine.utils.xyz
 import org.joml.Matrix4f
 import org.joml.Vector3f
+import org.joml.Vector4f
 import java.io.File
 
 
@@ -41,13 +44,18 @@ class Renderer(window: Window) {
         shaderProgram.createUniform("ambientLight")
         shaderProgram.createUniform("specularPower")
 
-        // light
-        shaderProgram.createUniform("light.color")
-        shaderProgram.createUniform("light.position")
-        shaderProgram.createUniform("light.intensity")
-        shaderProgram.createUniform("light.attenuation.constant")
-        shaderProgram.createUniform("light.attenuation.linear")
-        shaderProgram.createUniform("light.attenuation.exponent")
+        // point light
+        shaderProgram.createUniform("pointLight.color")
+        shaderProgram.createUniform("pointLight.position")
+        shaderProgram.createUniform("pointLight.intensity")
+        shaderProgram.createUniform("pointLight.attenuation.constant")
+        shaderProgram.createUniform("pointLight.attenuation.linear")
+        shaderProgram.createUniform("pointLight.attenuation.exponent")
+
+        // directional light
+        shaderProgram.createUniform("directionalLight.color")
+        shaderProgram.createUniform("directionalLight.direction")
+        shaderProgram.createUniform("directionalLight.intensity")
 
         // material
         shaderProgram.createUniform("material.ambient")
@@ -68,9 +76,10 @@ class Renderer(window: Window) {
         items: List<GameItem>,
         ambientLight: Vector3f,
         pointLight: PointLight,
+        directionalLight: DirectionalLight,
         hud: Hud
     ) {
-        renderScene(window, camera, ambientLight, pointLight, items)
+        renderScene(window, camera, ambientLight, pointLight, directionalLight, items)
         renderHud(window, hud)
     }
 
@@ -79,6 +88,7 @@ class Renderer(window: Window) {
         camera: Camera,
         ambientLight: Vector3f,
         pointLight: PointLight,
+        directionalLight: DirectionalLight,
         items: List<GameItem>
     ) {
         perspectiveConfig.updateRatio(window)
@@ -95,7 +105,11 @@ class Renderer(window: Window) {
 
         val lightViewPos = Transformation.worldToView(pointLight.position)
         val currPointLight = PointLight(pointLight.color, lightViewPos, pointLight.intensity)
-        shaderProgram.setUniform("light", currPointLight)
+        shaderProgram.setUniform("pointLight", currPointLight)
+
+        val dir = Vector4f(directionalLight.direction, 0f).apply { mul(viewMatrix) }
+        val currDirectionalLight = DirectionalLight(directionalLight.color, dir.xyz, directionalLight.intensity)
+        shaderProgram.setUniform("directionalLight", currDirectionalLight)
 
         renderItems(items, viewMatrix)
         //        Log.info("${items.sumBy { it.mesh.vertexCount / 3 }} rendered triangles")

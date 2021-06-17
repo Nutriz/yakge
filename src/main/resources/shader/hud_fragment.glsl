@@ -1,4 +1,4 @@
-#version 330
+#version 320 es
 precision mediump float;
 
 in vec2 outTexCoord;

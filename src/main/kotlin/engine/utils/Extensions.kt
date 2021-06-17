@@ -1,6 +1,7 @@
 package engine.utils
 
 import org.joml.Matrix4f
+import org.joml.Vector3f
 import org.joml.Vector4f
 import org.lwjgl.system.MemoryUtil
 import java.math.RoundingMode
@@ -43,3 +44,6 @@ fun Matrix4f.toNormalizedString(): String {
     formatter.minimumFractionDigits = 2
     return this.toString(formatter)
 }
+
+val Vector4f.xyz: Vector3f
+    get() = Vector3f(this.x, this.y, this.z)

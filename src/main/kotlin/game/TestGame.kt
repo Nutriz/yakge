@@ -1,16 +1,18 @@
 package game
 
 import engine.*
+import engine.graphics.DirectionalLight
 import engine.graphics.Material
 import engine.graphics.PointLight
 import engine.graphics.Texture
-import engine.utils.Color
-import engine.utils.MouseInput
-import engine.utils.ObjLoader
+import engine.utils.*
 import org.joml.Vector3f
 import org.joml.Vector4f
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.opengl.GL30.*
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 class TestGame : GameLifecycle {
@@ -20,10 +22,14 @@ class TestGame : GameLifecycle {
     private val camera = Camera()
     private val cameraInc = Vector3f()
     private val ambientLight = Vector3f(0.3f, 0.3f, 0.3f)
-    private val light = PointLight(
+    private val pointLight = PointLight(
         color = Vector3f(1f, 1f, 1f),
         position = Vector3f(0f, 3f, -2f)
     )
+
+    private val directionalLight = DirectionalLight(intensity = 0.2f)
+    private var lightAngle = -90f
+
     private val lightInc = Vector3f()
 
     private val gameItems = mutableListOf<GameItem>()
@@ -123,12 +129,17 @@ class TestGame : GameLifecycle {
             window.isKeyPressed(GLFW_KEY_PAGE_DOWN) -> lightInc.y = -1f
         }
         when {
-            window.isKeyPressed(GLFW_KEY_O) -> light.intensity -= 0.01f
-            window.isKeyPressed(GLFW_KEY_P) -> light.intensity += 0.01f
+            window.isKeyPressed(GLFW_KEY_O) -> pointLight.intensity -= 0.01f
+            window.isKeyPressed(GLFW_KEY_P) -> pointLight.intensity += 0.01f
         }
 
-        light.intensity = light.intensity.coerceAtLeast(0f)
-        light.intensity = light.intensity.coerceAtMost(1f)
+        when {
+            window.isKeyPressed(GLFW_KEY_L) -> lightAngle += 0.5f
+            window.isKeyPressed(GLFW_KEY_K) -> lightAngle -= 0.5f
+        }
+
+        pointLight.intensity = pointLight.intensity.coerceAtLeast(0f)
+        pointLight.intensity = pointLight.intensity.coerceAtMost(1f)
 
         if (window.isKeyPressed(GLFW_KEY_SPACE)) {
             camera.position.zero()
@@ -140,7 +151,7 @@ class TestGame : GameLifecycle {
         // Update camera position
         camera.movePosition(cameraInc.x * CAMERA_POS_STEP, cameraInc.y * CAMERA_POS_STEP, cameraInc.z * CAMERA_POS_STEP)
 
-        light.position.add(lightInc.mul(CAMERA_POS_STEP))
+        pointLight.position.add(lightInc.mul(CAMERA_POS_STEP))
 
         // Update camera based on mouse
         if (mouseInput.isRightButtonPressed) {
@@ -150,13 +161,40 @@ class TestGame : GameLifecycle {
         }
 
 //        gameItems.first { it.mesh.vertexCount > 300000 }.rotation.add(0f, 1f, 0f)
-        gameItems.last().position.set(light.position)
+        gameItems.last().position.set(pointLight.position)
+
+        updateDirectionalLight()
+
+        (hud.gameItems.first() as TextItem).updateText("angle $lightAngle°")
+    }
+
+    private fun updateDirectionalLight() {
+        when (lightAngle) {
+            in 90f..360f -> {
+                directionalLight.intensity = 0f
+                if (lightAngle >= 270)
+                    lightAngle = -90f
+            }
+            !in -80f..80f -> {
+                val factor = 1f - (abs(lightAngle) - 80f) / 10f
+                directionalLight.intensity = factor.coerceAtLeast(0f)
+                directionalLight.color.y = factor.coerceAtLeast(0.9f)
+                directionalLight.color.z = factor.coerceAtLeast(0.5f)
+            }
+            else -> {
+                directionalLight.intensity = 1f
+                directionalLight.color.set(1f)
+            }
+        }
+        Log.debug("angle: $lightAngle, factor: ${directionalLight.intensity}, dir: ${directionalLight.direction}, color: ${directionalLight.color}")
+        directionalLight.direction.x = sin(lightAngle.toRadians())
+        directionalLight.direction.y = cos(lightAngle.toRadians())
     }
 
     override fun render(window: Window) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
 
-        renderer?.render(window, camera, gameItems, ambientLight, light, hud)
+        renderer?.render(window, camera, gameItems, ambientLight, pointLight, directionalLight, hud)
     }
 
     override fun cleanup() {

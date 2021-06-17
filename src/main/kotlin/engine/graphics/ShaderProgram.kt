@@ -116,6 +116,12 @@ class ShaderProgram(
         setUniform("$uniformName.attenuation.exponent", pointLight.attenuation.exponent)
     }
 
+    fun setUniform(uniformName: String, directionalLight: DirectionalLight) {
+        setUniform("$uniformName.color", directionalLight.color)
+        setUniform("$uniformName.direction", directionalLight.direction)
+        setUniform("$uniformName.intensity", directionalLight.intensity)
+    }
+
     fun setUniform(uniformName: String, material: Material) {
         setUniform("$uniformName.ambient", material.ambient)
         setUniform("$uniformName.diffuse", material.diffuse)

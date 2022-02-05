@@ -1,10 +1,11 @@
+
 import engine.GameEngine
-import game.TestGame
+import game.littletown.LittleTown
 
 fun main() {
     GameEngine(
-        width = 1200,
-        height = 700,
-        game = TestGame()
+        width = 1400,
+        height = 1000,
+        game = LittleTown()
     ).start()
 }

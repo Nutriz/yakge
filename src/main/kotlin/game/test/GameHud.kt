@@ -1,4 +1,4 @@
-package game
+package game.test
 
 import engine.GameItem
 import engine.Hud

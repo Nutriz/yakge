@@ -144,8 +144,10 @@ class ShaderProgram(
         }
     }
 
-    fun bind() {
+    fun bind(block: () -> Unit = { }) {
         glUseProgram(programId)
+        block()
+        unbind()
     }
 
     fun unbind() {

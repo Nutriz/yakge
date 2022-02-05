@@ -1,6 +1,6 @@
 package engine
 
-import com.curiouscreature.kotlin.math.Float3
+import dev.romainguy.kotlin.math.Float3
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL

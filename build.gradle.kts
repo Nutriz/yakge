@@ -2,13 +2,13 @@ import org.gradle.internal.os.OperatingSystem
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.6.10"
 }
 
 group = "fr.nutriz"
 version = "0.1-alpha1"
-val lwjglVersion = "3.2.3"
-val jomlVersion = "1.10.1"
+val lwjglVersion = "3.3.0"
+val jomlVersion = "1.10.3"
 
 val lwjglNatives = when (OperatingSystem.current()) {
     OperatingSystem.LINUX   -> "natives-linux"
@@ -22,12 +22,12 @@ repositories {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "16"
+    kotlinOptions.jvmTarget = "17"
 }
 
 dependencies {
-    implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
     implementation(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
+    implementation("dev.romainguy:kotlin-math:1.2.0")
 
     implementation("org.lwjgl", "lwjgl")
     implementation("org.lwjgl", "lwjgl-assimp")

@@ -27,7 +27,7 @@ fun IntArray.toIntBuffer(): IntBuffer {
 }
 
 fun Float.toRadians(): Float {
-    return com.curiouscreature.kotlin.math.radians(this)
+    return dev.romainguy.kotlin.math.radians(this)
 }
 
 @OptIn(ExperimentalTime::class)

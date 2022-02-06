@@ -8,7 +8,10 @@ import org.lwjgl.glfw.GLFW
 
 class MyCamera {
 
-    val camera = Camera()
+    val camera = Camera().apply {
+        setPosition(-1.8f, 3.6f, 3.8f)
+        setRotation(36f, 46f, 0f)
+    }
     private val cameraInc = Vector3f()
 
     fun cameraInput(window: Window) {
@@ -30,11 +33,6 @@ class MyCamera {
         }
     }
 
-    private fun resetPosition() {
-        camera.position.zero()
-        camera.rotation.zero()
-    }
-
     fun move() {
         camera.movePosition(
             cameraInc.x * CAMERA_POS_STEP,
@@ -53,8 +51,13 @@ class MyCamera {
         )
     }
 
+    private fun resetPosition() {
+        camera.position.zero()
+        camera.rotation.zero()
+    }
+
     companion object {
-        const val CAMERA_POS_STEP = 0.1f
+        const val CAMERA_POS_STEP = 0.2f
         const val MOUSE_SENSITIVITY = 0.4f
     }
 }

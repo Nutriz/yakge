@@ -57,5 +57,13 @@ fun Matrix4f.toNormalizedString(): String {
     return this.toString(formatter)
 }
 
+fun Vector3f.toNormalizedString(): String {
+    val formatter = NumberFormat.getInstance()
+    formatter.roundingMode = RoundingMode.HALF_UP
+    formatter.maximumFractionDigits = 2
+    formatter.minimumFractionDigits = 2
+    return this.toString(formatter)
+}
+
 val Vector4f.xyz: Vector3f
     get() = Vector3f(this.x, this.y, this.z)

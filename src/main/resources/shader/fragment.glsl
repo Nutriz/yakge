@@ -4,6 +4,7 @@ in  vec2 outTexCoord;
 out vec4 fragColor;
 
 uniform sampler2D texture_sampler;
+uniform vec4 tint;
 
 struct Material
 {
@@ -16,13 +17,11 @@ struct Material
 };
 uniform Material material;
 
-
-
 void main()
 {
     if (material.hasTexture == 1) {
-        fragColor = texture(texture_sampler, outTexCoord);
+        fragColor = texture(texture_sampler, outTexCoord) * tint;
     } else {
-        fragColor = material.diffuse;
+        fragColor = material.ambient;
     }
 }

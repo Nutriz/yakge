@@ -33,6 +33,8 @@ class Renderer(window: Window) {
         shaderProgram.createUniform("material.reflectance")
         shaderProgram.createUniform("material.unshaded")
         shaderProgram.createUniform("material.hasTexture")
+
+        shaderProgram.createUniform("tint")
     }
 
     fun render(
@@ -69,6 +71,7 @@ class Renderer(window: Window) {
             shaderProgram.setUniform("modelViewMatrix", modelViewMatrix)
 
             shaderProgram.setUniform("material", item.mesh.material)
+            shaderProgram.setUniform("tint", item.tint)
 
             item.mesh.render()
         }

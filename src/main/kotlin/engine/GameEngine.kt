@@ -11,11 +11,15 @@ import org.lwjgl.opengl.GL11.glViewport
 class GameEngine(
     width: Int = 400,
     height: Int = 400,
-    private val title: String = "Yak Game Engine",
+    title: String = "Yak Game Engine",
     private val game: GameLifecycle
 ) {
 
-    private val window = Window(width, height, title)
+    private val window = Window(
+        width,  height, title, options = Window.WindowOptions(
+            antialiasing = true
+        )
+    )
     private val mouseInput = MouseInput(window)
     private val targetFps = 60
     private val targetUps = 30
@@ -40,7 +44,7 @@ class GameEngine(
 
     private fun gameLoop() {
         var elapsed: Float
-        var accumulator: Double = 0.0
+        var accumulator = 0.0
 
         while (!glfwWindowShouldClose(window.windowHandle)) {
             val loopStartTime = Timer.getTime()

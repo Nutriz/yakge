@@ -4,7 +4,6 @@ import dev.romainguy.kotlin.math.Float3
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.system.MemoryUtil
 
@@ -13,7 +12,8 @@ class Window(
     var width: Int = 400,
     var height: Int = 400,
     var title: String = "Yak Game Engine",
-    val vSync: Boolean = true
+    val vSync: Boolean = true,
+    val options: WindowOptions = WindowOptions(),
 ) {
 
     var windowHandle: Long = 0
@@ -36,10 +36,21 @@ class Window(
 
         GL.createCapabilities()
         glEnable(GL_DEPTH_TEST)
+        glEnable(GL_STENCIL_TEST)
 
         // Support for transparency
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        if (options.cullFace) {
+            glEnable(GL_CULL_FACE)
+            glCullFace(GL_BACK)
+        }
+
+        // Antialiasing
+        if (options.antialiasing) {
+            glfwWindowHint(GLFW_SAMPLES, 4)
+        }
     }
 
     private fun initGlfw() {
@@ -86,13 +97,13 @@ class Window(
         r: Float = 0.0f,
         g: Float = 0.0f,
         b: Float = 0.0f,
-        a: Float = 0.0f
-    ) = GL11.glClearColor(r, g, b, a)
+        a: Float = 0.0f,
+    ) = glClearColor(r, g, b, a)
 
     fun setBackgroundColor(
         color: Float3,
-        a: Float = 0.0f
-    ) = GL11.glClearColor(color.r, color.g, color.b, a)
+        a: Float = 0.0f,
+    ) = glClearColor(color.r, color.g, color.b, a)
 
     fun isKeyPressed(keyCode: Int) = glfwGetKey(windowHandle, keyCode) == GLFW_PRESS
 
@@ -100,4 +111,24 @@ class Window(
         glfwSwapBuffers(windowHandle)
         glfwPollEvents()
     }
+
+    fun restoreState() {
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_STENCIL_TEST)
+        if (options.showTriangles) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+        }
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        if (options.cullFace) {
+            glEnable(GL_CULL_FACE)
+            glCullFace(GL_BACK)
+        }
+    }
+
+    class WindowOptions(var antialiasing: Boolean = false) {
+        var cullFace = false
+        var showTriangles = false
+        var showFps = false
+    }
 }
+

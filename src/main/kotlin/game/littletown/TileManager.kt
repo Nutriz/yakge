@@ -7,18 +7,20 @@ import engine.utils.ObjLoader
 import org.joml.Vector3f
 import org.joml.Vector4f
 
-class TileManager(private val gameItems: MutableList<GameItem>) {
+class TileManager {
+
+    val tiles = mutableListOf<Tile>()
 
     fun initialTiles() {
         repeat(3) { z ->
             repeat(3) { x ->
                 val tile = Tile.Water(x, z)
-                gameItems += tile.gameItem
+                tiles += tile
             }
         }
 
         val tile = Tile.Grass(1, 1)
-        gameItems += tile.gameItem
+        tiles += tile
     }
 }
 

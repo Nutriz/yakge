@@ -35,19 +35,22 @@ class Renderer(window: Window) {
         shaderProgram.createUniform("material.hasTexture")
 
         shaderProgram.createUniform("tint")
+        shaderProgram.createUniform("selected")
     }
 
     fun render(
         window: Window,
         camera: Camera,
+        tileManger: TileManager,
         items: List<GameItem>,
     ) {
-        renderScene(window, camera, items)
+        renderScene(window, camera, tileManger, items)
     }
 
     private fun renderScene(
         window: Window,
         camera: Camera,
+        tileManger: TileManager,
         items: List<GameItem>
     ) {
         perspectiveConfig.updateRatio(window)
@@ -56,6 +59,7 @@ class Renderer(window: Window) {
             updateProjectionMatrix()
             shaderProgram.setUniform("textureSampler", 0)
             val viewMatrix = Transformation.getViewMatrix(camera)
+            renderTiles(tileManger, viewMatrix)
             renderItems(items, viewMatrix)
         }
     }
@@ -63,6 +67,19 @@ class Renderer(window: Window) {
     private fun updateProjectionMatrix() {
         val projectionMatrix = Transformation.getProjectionMatrix(perspectiveConfig)
         shaderProgram.setUniform("projectionMatrix", projectionMatrix)
+    }
+
+    private fun renderTiles(tileManger: TileManager, viewMatrix: Matrix4f) {
+        tileManger.tiles.forEach { tile ->
+            val item = tile.gameItem
+            val modelViewMatrix = Transformation.getModelViewMatrix(item, viewMatrix)
+            shaderProgram.setUniform("modelViewMatrix", modelViewMatrix)
+
+            shaderProgram.setUniform("material", item.mesh.material)
+            shaderProgram.setUniform("tint", item.tint)
+            shaderProgram.setUniform("selected", if (tile.selected) 1f else 0f)
+            item.mesh.render()
+        }
     }
 
     private fun renderItems(items: List<GameItem>, viewMatrix: Matrix4f) {

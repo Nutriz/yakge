@@ -1,6 +1,7 @@
 #version 400
 
 in  vec2 outTexCoord;
+in float outSelected;
 out vec4 fragColor;
 
 uniform sampler2D texture_sampler;
@@ -19,7 +20,9 @@ uniform Material material;
 
 void main()
 {
-    if (material.hasTexture == 1) {
+    if (outSelected > 0) {
+        fragColor = texture(texture_sampler, outTexCoord);
+    } else if (material.hasTexture == 1) {
         fragColor = texture(texture_sampler, outTexCoord) * tint;
     } else {
         fragColor = material.ambient;

@@ -20,7 +20,7 @@ class LittleTown : GameLifecycle {
 
     private val gameItems = mutableListOf<GameItem>()
 
-    private val tileManger = TileManager(gameItems)
+    private val tileManger = TileManager()
 
     override fun init(window: Window) {
         renderer = Renderer(window)
@@ -56,7 +56,7 @@ class LittleTown : GameLifecycle {
     override fun render(window: Window) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT)
 
-        renderer?.render(window, myCamera.camera, gameItems)
+        renderer?.render(window, myCamera.camera, tileManger, gameItems)
         hud?.render(window)
     }
 

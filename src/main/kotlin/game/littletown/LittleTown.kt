@@ -49,6 +49,8 @@ class LittleTown : GameLifecycle {
             myCamera.rotate(mouseInput)
         }
 
+        myCamera.camera.updateViewMatrix()
+
 //        hud?.addText("cam", "cam: ${myCamera.camera.position.toNormalizedString()}", 200, 0)
 //        hud?.addText("rot", "rot: ${myCamera.camera.rotation.toNormalizedString()}", 200, 100)
     }

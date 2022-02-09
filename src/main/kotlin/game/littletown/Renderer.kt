@@ -58,9 +58,8 @@ class Renderer(window: Window) {
         shaderProgram.bind {
             updateProjectionMatrix()
             shaderProgram.setUniform("textureSampler", 0)
-            val viewMatrix = Transformation.getViewMatrix(camera)
-            renderTiles(tileManger, viewMatrix)
-            renderItems(items, viewMatrix)
+            renderTiles(tileManger, camera.viewMatrix)
+            renderItems(items, camera.viewMatrix)
         }
     }
 

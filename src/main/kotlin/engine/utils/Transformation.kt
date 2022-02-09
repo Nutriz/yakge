@@ -1,6 +1,5 @@
 package engine.utils
 
-import engine.Camera
 import engine.GameItem
 import engine.Window
 import org.joml.Matrix4f
@@ -24,11 +23,6 @@ object Transformation {
     private val projectionMatrix: Matrix4f = Matrix4f()
     private val orthoMatrix: Matrix4f = Matrix4f()
     private val modelViewMatrix: Matrix4f = Matrix4f()
-    private val viewMatrix: Matrix4f = Matrix4f()
-
-    fun getProjectionMatrix(fov: Float, width: Float, height: Float, zNear: Float, zFar: Float): Matrix4f {
-        return projectionMatrix.setPerspective(fov, width / height, zNear, zFar)
-    }
 
     fun getProjectionMatrix(perspectiveConfig: PerspectiveConfig): Matrix4f {
         with(perspectiveConfig) {
@@ -47,20 +41,18 @@ object Transformation {
         return modelViewMatrix
     }
 
-    fun getViewMatrix(camera: Camera): Matrix4f {
-        val cameraPos = camera.position
-        val cameraRot = camera.rotation
+    fun updateGenericViewMatrix(position: Vector3f, rotation: Vector3f, viewMatrix: Matrix4f): Matrix4f {
         viewMatrix.identity()
         // First do the rotation so camera rotates over its position
         viewMatrix
-            .rotate(cameraRot.x.toRadians(), Vector3f(1f, 0f, 0f))
-            .rotate(cameraRot.y.toRadians(), Vector3f(0f, 1f, 0f))
+            .rotate(rotation.x.toRadians(), Vector3f(1f, 0f, 0f))
+            .rotate(rotation.y.toRadians(), Vector3f(0f, 1f, 0f))
         // Then do the translation
-        viewMatrix.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z)
+        viewMatrix.translate(-position.x, -position.y, -position.z)
         return viewMatrix
     }
 
-    fun worldToView(position: Vector3f): Vector3f {
+    fun worldToView(position: Vector3f, viewMatrix: Matrix4f): Vector3f {
         val viewPos = Vector4f(position, 1f).mul(viewMatrix)
         return Vector3f(viewPos.x, viewPos.y, viewPos.z)
     }

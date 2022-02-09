@@ -99,11 +99,11 @@ class Renderer(window: Window) {
 
         shaderProgram.setUniform("textureSampler", 0)
 
-        val viewMatrix = Transformation.getViewMatrix(camera)
+        val viewMatrix = camera.updateViewMatrix()
         shaderProgram.setUniform("ambientLight", ambientLight)
         shaderProgram.setUniform("specularPower", specularPower)
 
-        val lightViewPos = Transformation.worldToView(pointLight.position)
+        val lightViewPos = Transformation.worldToView(pointLight.position, viewMatrix)
         val currPointLight = PointLight(pointLight.color, lightViewPos, pointLight.intensity)
         shaderProgram.setUniform("pointLight", currPointLight)
 

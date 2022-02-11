@@ -1,9 +1,6 @@
 package game.littletown
 
-import engine.GameItem
-import engine.GameLifecycle
-import engine.HudNano
-import engine.Window
+import engine.*
 import engine.graphics.Material
 import engine.graphics.Texture
 import engine.utils.MouseInput
@@ -50,6 +47,8 @@ class LittleTown : GameLifecycle {
         }
 
         myCamera.camera.updateViewMatrix()
+
+        CameraBoxSelectionDetector.selectGameItem(tileManger.tiles, myCamera.camera)
 
 //        hud?.addText("cam", "cam: ${myCamera.camera.position.toNormalizedString()}", 200, 0)
 //        hud?.addText("rot", "rot: ${myCamera.camera.rotation.toNormalizedString()}", 200, 100)

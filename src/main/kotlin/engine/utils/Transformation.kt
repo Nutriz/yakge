@@ -20,15 +20,8 @@ data class PerspectiveConfig(
 
 object Transformation {
 
-    private val projectionMatrix: Matrix4f = Matrix4f()
     private val orthoMatrix: Matrix4f = Matrix4f()
     private val modelViewMatrix: Matrix4f = Matrix4f()
-
-    fun getProjectionMatrix(perspectiveConfig: PerspectiveConfig): Matrix4f {
-        with(perspectiveConfig) {
-            return projectionMatrix.setPerspective(fov, aspectRatio, zNear, zFar)
-        }
-    }
 
     fun getModelViewMatrix(gameItem: GameItem, viewMatrix: Matrix4f): Matrix4f {
         val rotation = gameItem.rotation

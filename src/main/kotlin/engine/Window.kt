@@ -1,6 +1,8 @@
 package engine
 
 import dev.romainguy.kotlin.math.Float3
+import engine.utils.PerspectiveConfig
+import org.joml.Matrix4f
 import org.lwjgl.glfw.GLFW.*
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL
@@ -18,6 +20,8 @@ class Window(
 
     var windowHandle: Long = 0
     var isResized = false
+
+    val projectionMatrix: Matrix4f = Matrix4f()
 
     init {
         setupPrintErrorCallback()
@@ -110,6 +114,12 @@ class Window(
     fun update() {
         glfwSwapBuffers(windowHandle)
         glfwPollEvents()
+    }
+
+    fun getProjectionMatrix(perspectiveConfig: PerspectiveConfig): Matrix4f {
+        with(perspectiveConfig) {
+            return projectionMatrix.setPerspective(fov, aspectRatio, zNear, zFar)
+        }
     }
 
     fun restoreState() {

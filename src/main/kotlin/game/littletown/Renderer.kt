@@ -41,55 +41,42 @@ class Renderer(window: Window) {
     fun render(
         window: Window,
         camera: Camera,
-        tileManger: TileManager,
         items: List<GameItem>,
+        tiles: MutableList<GameItem>,
     ) {
-        renderScene(window, camera, tileManger, items)
+        renderScene(window, camera, items, tiles)
     }
 
     private fun renderScene(
         window: Window,
         camera: Camera,
-        tileManger: TileManager,
-        items: List<GameItem>
+        items: List<GameItem>,
+        tiles: List<GameItem>,
     ) {
         perspectiveConfig.updateRatio(window)
 
         shaderProgram.bind {
-            updateProjectionMatrix()
+            updateProjectionMatrix(window)
             shaderProgram.setUniform("textureSampler", 0)
-            renderTiles(tileManger, camera.viewMatrix)
             renderItems(items, camera.viewMatrix)
+            renderItems(tiles, camera.viewMatrix)
         }
     }
 
-    private fun updateProjectionMatrix() {
-        val projectionMatrix = Transformation.getProjectionMatrix(perspectiveConfig)
+    private fun updateProjectionMatrix(window: Window) {
+        val projectionMatrix = window.getProjectionMatrix(perspectiveConfig)
         shaderProgram.setUniform("projectionMatrix", projectionMatrix)
     }
 
-    private fun renderTiles(tileManger: TileManager, viewMatrix: Matrix4f) {
-        tileManger.tiles.forEach { tile ->
-            val item = tile.gameItem
-            val modelViewMatrix = Transformation.getModelViewMatrix(item, viewMatrix)
+    private fun renderItems(gameItems: List<GameItem>, viewMatrix: Matrix4f) {
+        gameItems.forEach { gameItem ->
+            val modelViewMatrix = Transformation.getModelViewMatrix(gameItem, viewMatrix)
             shaderProgram.setUniform("modelViewMatrix", modelViewMatrix)
 
-            shaderProgram.setUniform("material", item.mesh.material)
-            shaderProgram.setUniform("tint", item.tint)
-            shaderProgram.setUniform("selected", if (tile.selected) 1f else 0f)
-            item.mesh.render()
-        }
-    }
-
-    private fun renderItems(items: List<GameItem>, viewMatrix: Matrix4f) {
-        items.forEach { item ->
-            val modelViewMatrix = Transformation.getModelViewMatrix(item, viewMatrix)
-            shaderProgram.setUniform("modelViewMatrix", modelViewMatrix)
-
-            shaderProgram.setUniform("material", item.mesh.material)
-            shaderProgram.setUniform("tint", item.tint)
-
-            item.mesh.render()
+            shaderProgram.setUniform("material", gameItem.mesh.material)
+            shaderProgram.setUniform("tint", gameItem.tint)
+            shaderProgram.setUniform("selected", if (gameItem.selected) 1f else 0f)
+            gameItem.mesh.render()
         }
     }
 

@@ -20,11 +20,18 @@ uniform Material material;
 
 void main()
 {
+    vec4 selectedTint = vec4(2, 0, 0, 1);
     if (outSelected > 0) {
-        fragColor = texture(texture_sampler, outTexCoord);
-    } else if (material.hasTexture == 1) {
-        fragColor = texture(texture_sampler, outTexCoord) * tint;
+        if (material.hasTexture == 1) {
+            fragColor = texture(texture_sampler, outTexCoord) * tint * selectedTint;
+        } else {
+            fragColor = material.ambient * selectedTint;
+        }
     } else {
-        fragColor = material.ambient;
+        if (material.hasTexture == 1) {
+            fragColor = texture(texture_sampler, outTexCoord) * tint;
+        } else {
+            fragColor = material.ambient;
+        }
     }
 }

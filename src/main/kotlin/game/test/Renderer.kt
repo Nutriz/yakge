@@ -95,7 +95,7 @@ class Renderer(window: Window) {
 
         shaderProgram.bind()
 
-        updateProjectionMatrix()
+        updateProjectionMatrix(window)
 
         shaderProgram.setUniform("textureSampler", 0)
 
@@ -134,8 +134,8 @@ class Renderer(window: Window) {
         hudShaderProgram.unbind()
     }
 
-    private fun updateProjectionMatrix() {
-        val projectionMatrix = Transformation.getProjectionMatrix(perspectiveConfig)
+    private fun updateProjectionMatrix(window: Window) {
+        val projectionMatrix = window.getProjectionMatrix(perspectiveConfig)
         shaderProgram.setUniform("projectionMatrix", projectionMatrix)
     }
 

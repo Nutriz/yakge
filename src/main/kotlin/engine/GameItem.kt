@@ -11,6 +11,7 @@ open class GameItem(
     var scale: Float = 1f,
     val rotation: Vector3f = Vector3f(),
     var tint: Vector4f = Vector4f(1f, 1f, 1f, 1f),
+    var selected: Boolean = false
 ) {
     constructor() : this(Vector3f(0f, 0f, 0f))
     constructor(x: Float = 0f, y: Float = 0f, z: Float = 0f) : this(Vector3f(x, y, z))

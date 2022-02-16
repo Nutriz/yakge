@@ -1,8 +1,9 @@
 package game.littletown
 
-import engine.*
-import engine.graphics.Material
-import engine.graphics.Texture
+import engine.GameItem
+import engine.GameLifecycle
+import engine.HudNano
+import engine.Window
 import engine.utils.MouseInput
 import engine.utils.ObjLoader
 import org.lwjgl.opengl.GL30.*
@@ -19,20 +20,26 @@ class LittleTown : GameLifecycle {
 
     private val tileManger = TileManager()
 
+    lateinit var window: Window
+
+    val cameraSelector = CameraBoxSelectionDetector()
+    val mouseSelector = MouseBoxSelectionDetector()
+
     override fun init(window: Window) {
+        this.window = window
         renderer = Renderer(window)
         hud = HudNano(window)
         window.setBackgroundColor(0.5f, 0.5f, 0.5f)
 
-        val cubeMesh = ObjLoader.loadMesh("model/cube.obj")
-        cubeMesh.material = Material(texture = Texture.loadFromFile("texture/grassblock.png"))
-        val cube = GameItem().apply { mesh = cubeMesh }
-        cube.scale = 0.5f
-        cube.position.set(4f, 0.5f, -2f)
-
+        repeat(5) {
+            val cubeMesh = ObjLoader.loadMesh("model/cube.obj")
+//            cubeMesh.material = Material(texture = Texture.loadFromFile("texture/grassblock.png"))
+            val cube = GameItem().apply { mesh = cubeMesh }
+            cube.scale = 0.5f
+            cube.position.set(4f + it, 0.5f+it, -2f+it)
+            gameItems += cube
+        }
         tileManger.initialTiles()
-
-        gameItems += cube
     }
 
     override fun input(window: Window, mouseInput: MouseInput) {
@@ -48,7 +55,11 @@ class LittleTown : GameLifecycle {
 
         myCamera.camera.updateViewMatrix()
 
-        CameraBoxSelectionDetector.selectGameItem(tileManger.tiles, myCamera.camera)
+        hud?.addText("mouse", "mouse: ${mouseInput.currentPos.x}, ${mouseInput.currentPos.y}", 100, 100)
+
+        cameraSelector.selectGameItem(gameItems, myCamera.camera)
+        cameraSelector.selectGameItem(tileManger.tiles, myCamera.camera)
+        mouseSelector.selectGameItem(tileManger.tiles, window, mouseInput.currentPos, myCamera.camera)
 
 //        hud?.addText("cam", "cam: ${myCamera.camera.position.toNormalizedString()}", 200, 0)
 //        hud?.addText("rot", "rot: ${myCamera.camera.rotation.toNormalizedString()}", 200, 100)
@@ -57,7 +68,7 @@ class LittleTown : GameLifecycle {
     override fun render(window: Window) {
         glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT)
 
-        renderer?.render(window, myCamera.camera, tileManger, gameItems)
+        renderer?.render(window, myCamera.camera, gameItems, tileManger.tiles)
         hud?.render(window)
     }
 

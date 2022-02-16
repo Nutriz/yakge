@@ -1,35 +1,36 @@
 package game.littletown
 
 import engine.Camera
+import engine.GameItem
 import org.joml.Intersectionf
 import org.joml.Vector2f
 import org.joml.Vector3f
 
-
-object CameraBoxSelectionDetector {
-
+open class CameraBoxSelectionDetector {
     private val max: Vector3f = Vector3f()
     private val min: Vector3f = Vector3f()
     private val nearFar: Vector2f = Vector2f()
+    private val dir: Vector3f = Vector3f()
 
-    private var dir: Vector3f = Vector3f()
+    open fun selectGameItem(gameItems: MutableList<GameItem>, camera: Camera) {
+        dir.set(camera.viewMatrix.positiveZ(dir).negate())
+        selectGameItem(gameItems, camera.position, dir)
+    }
 
-    fun selectGameItem(tiles: List<Tile>, camera: Camera) {
-        var selectedTile: Tile? = null
+    protected fun selectGameItem(gameItems: MutableList<GameItem>, center: Vector3f, dir: Vector3f) {
+        var selectedGameItem: GameItem? = null
         var closestDistance = Float.POSITIVE_INFINITY
-        dir = camera.viewMatrix.positiveZ(dir).negate()
-        for (tile in tiles) {
-            tile.selected = false
-            val item = tile.gameItem
-            min.set(item.position)
-            min.add(-item.scale, -item.scale, -item.scale)
-            max.set(item.position)
-            max.add(item.scale, item.scale, item.scale)
-            if (Intersectionf.intersectRayAab(camera.position, dir, min, max, nearFar) && nearFar.x < closestDistance) {
+        for (gameItem in gameItems) {
+            gameItem.selected = false
+            min.set(gameItem.position)
+            max.set(gameItem.position)
+            min.add(-gameItem.scale, -gameItem.scale, -gameItem.scale)
+            max.add(gameItem.scale, gameItem.scale, gameItem.scale)
+            if (Intersectionf.intersectRayAab(center, dir, min, max, nearFar) && nearFar.x < closestDistance) {
                 closestDistance = nearFar.x
-                selectedTile = tile
+                selectedGameItem = gameItem
             }
         }
-        selectedTile?.selected = true
+        selectedGameItem?.selected = true
     }
 }

@@ -7,7 +7,7 @@ plugins {
 
 group = "fr.nutriz"
 version = "0.1-alpha1"
-val lwjglVersion = "3.3.0"
+val lwjglVersion = "3.3.1"
 val jomlVersion = "1.10.3"
 
 val lwjglNatives = when (OperatingSystem.current()) {

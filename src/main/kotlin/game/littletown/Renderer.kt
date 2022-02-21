@@ -1,9 +1,6 @@
 package game.littletown
 
-import engine.Camera
-import engine.GameItem
-import engine.LineItem
-import engine.Window
+import engine.*
 import engine.graphics.ShaderProgram
 import engine.utils.Log
 import engine.utils.PerspectiveConfig
@@ -52,12 +49,10 @@ class Renderer(window: Window) {
     fun render(
         window: Window,
         camera: Camera,
-        items: List<GameItem>,
-        tiles: MutableList<GameItem>,
-        lineItems: MutableList<LineItem>,
+        scene: Scene,
     ) {
-        renderScene(window, camera, items, tiles)
-        renderLines(window, camera, lineItems)
+        renderScene(window, camera, scene.gameItems, scene.tiles)
+        renderLines(window, camera, scene.lineItems)
     }
 
     private fun renderScene(

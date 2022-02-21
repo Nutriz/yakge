@@ -2,6 +2,7 @@ package game.littletown
 
 import engine.Camera
 import engine.GameItem
+import engine.LineItem
 import engine.Window
 import engine.graphics.ShaderProgram
 import engine.utils.Log
@@ -16,8 +17,13 @@ class Renderer(window: Window) {
     private val perspectiveConfig = PerspectiveConfig()
 
     private val shaderProgram = ShaderProgram(
-        File("shader/vertex.glsl").readText(),
-        File("shader/fragment.glsl").readText()
+        vertexSource = File("shader/vertex.glsl").readText(),
+        fragmentSource = File("shader/fragment.glsl").readText()
+    )
+
+    private val lineShaderProgram = ShaderProgram(
+        vertexSource = File("shader/line_vertex.glsl").readText(),
+        fragmentSource = File("shader/line_fragment.glsl").readText()
     )
 
     init {
@@ -36,6 +42,11 @@ class Renderer(window: Window) {
 
         shaderProgram.createUniform("tint")
         shaderProgram.createUniform("selected")
+
+        // Line shader
+        lineShaderProgram.createUniform("projectionMatrix")
+        lineShaderProgram.createUniform("viewMatrix")
+        lineShaderProgram.createUniform("color")
     }
 
     fun render(
@@ -43,8 +54,10 @@ class Renderer(window: Window) {
         camera: Camera,
         items: List<GameItem>,
         tiles: MutableList<GameItem>,
+        lineItems: MutableList<LineItem>,
     ) {
         renderScene(window, camera, items, tiles)
+        renderLines(window, camera, lineItems)
     }
 
     private fun renderScene(
@@ -60,6 +73,21 @@ class Renderer(window: Window) {
             shaderProgram.setUniform("textureSampler", 0)
             renderItems(items, camera.viewMatrix)
             renderItems(tiles, camera.viewMatrix)
+        }
+    }
+
+    private fun renderLines(window: Window, camera: Camera, lineItems: MutableList<LineItem>) {
+        perspectiveConfig.updateRatio(window)
+
+        lineShaderProgram.bind {
+            val projectionMatrix = window.getProjectionMatrix(perspectiveConfig)
+            lineShaderProgram.setUniform("projectionMatrix", projectionMatrix)
+
+            lineItems.forEach { line ->
+                lineShaderProgram.setUniform("viewMatrix", camera.viewMatrix)
+                lineShaderProgram.setUniform("color", line.color)
+                line.renderLine()
+            }
         }
     }
 

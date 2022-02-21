@@ -1,4 +1,4 @@
-package game.littletown
+package game.littletown.util
 
 import engine.Camera
 import engine.GameItem

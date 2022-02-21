@@ -1,4 +1,4 @@
-package game.littletown
+package game.littletown.util
 
 import engine.Camera
 import engine.GameItem
@@ -22,17 +22,16 @@ class MouseBoxSelectionDetector : CameraBoxSelectionDetector() {
         val x = (2 * mousePos.x).toFloat() / wdwWidth.toFloat() - 1.0f
         val y = 1.0f - (2 * mousePos.y).toFloat() / wdwHeight.toFloat()
         val z = -1.0f
-        invProjectionMatrix.set(window.projectionMatrix)
-        invProjectionMatrix.invert()
+        window.projectionMatrix.invert(invProjectionMatrix)
         tmpVec[x, y, z] = 1.0f
         tmpVec.mul(invProjectionMatrix)
         tmpVec.z = -1.0f
         tmpVec.w = 0.0f
         val viewMatrix = camera.viewMatrix
-        invViewMatrix.set(viewMatrix)
-        invViewMatrix.invert()
+        viewMatrix.invert(invViewMatrix)
         tmpVec.mul(invViewMatrix)
         mouseDir[tmpVec.x, tmpVec.y] = tmpVec.z
         selectGameItem(gameItems, camera.position, mouseDir)
     }
 }
+

@@ -3,6 +3,8 @@ package engine
 import engine.graphics.FontTexture
 import engine.graphics.Material
 import engine.graphics.Mesh
+import engine.graphics.MeshLine
+import engine.utils.Color
 import org.joml.Vector3f
 import org.joml.Vector4f
 
@@ -18,6 +20,16 @@ open class GameItem(
     constructor(x: Int = 0, y: Int = 0, z: Int = 0) : this(Vector3f(x.toFloat(), y.toFloat(), z.toFloat()))
 
     lateinit var mesh: Mesh
+}
+
+class LineItem(start: Vector3f, end: Vector3f, val color: Vector4f = Color.blue) {
+
+    val mesh = MeshLine(
+        positions = listOf(start.x, start.y, start.z, end.x, end.y, end.z).toFloatArray()
+    )
+    fun renderLine() {
+        mesh.render()
+    }
 }
 
 data class TextItem(

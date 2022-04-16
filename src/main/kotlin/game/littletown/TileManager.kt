@@ -12,8 +12,8 @@ class TileManager {
     val tiles = mutableListOf<GameItem>()
 
     fun initialTiles() {
-        repeat(3) { z ->
-            repeat(3) { x ->
+        repeat(6) { z ->
+            repeat(6) { x ->
                 val tile = WaterTile(x, z)
                 tiles += tile
             }
@@ -37,6 +37,8 @@ class TileManager {
 // TODO have an abstract/sealed Tile class
 class WaterTile(x: Int = 0, z: Int = 0) : GameItem(x.toFloat(), 0f, z.toFloat()) {
 
+open class WaterTile(x: Int = 0, z: Int = 0) : GameItem(x.toFloat(), -1f, z.toFloat()) {
+
     init {
         this.mesh = tileMesh
         this.mesh.material = tileMaterial
@@ -47,18 +49,5 @@ class WaterTile(x: Int = 0, z: Int = 0) : GameItem(x.toFloat(), 0f, z.toFloat())
     companion object {
         val tileMesh = ObjLoader.loadMesh("model/tiles/water.obj")
         val tileMaterial = Material(texture = Texture.loadFromFile("texture/water.png"))
-    }
-}
-
-class GrassTile(x: Int = 0, z: Int = 0) : GameItem(x.toFloat(), 0.3f, z.toFloat()) {
-
-    init {
-        this.mesh = tileMesh
-        this.mesh.material = tileMaterial
-    }
-
-    companion object {
-        val tileMesh = ObjLoader.loadMesh("model/tiles/grass.obj")
-        val tileMaterial = Material(ambient = Vector4f(0.5f, 1f, 0.5f, 1f))
     }
 }

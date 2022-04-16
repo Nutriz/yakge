@@ -1,8 +1,11 @@
 package game.littletown
 
-import engine.*
+import engine.GameItem
+import engine.GameLifecycle
+import engine.HudNano
+import engine.Window
 import engine.graphics.Material
-import engine.utils.Color
+import engine.graphics.Texture
 import engine.utils.MouseInput
 import engine.utils.ObjLoader
 import game.littletown.util.GridSelectionDetector
@@ -27,14 +30,26 @@ class LittleTown : GameLifecycle {
     private val tileManger = TileManager()
     private val gridSelector = GridSelectionDetector()
 
+    lateinit var window: Window
+
+    val cameraSelector = CameraBoxSelectionDetector()
+    val mouseSelector = MouseBoxSelectionDetector()
+    val gridSelector = GridSelectionDetector()
+
     override fun init(window: Window) {
         this.window = window
         renderer = Renderer(window)
         hud = HudNano(window)
         window.setBackgroundColor(0.5f, 0.5f, 0.5f)
 
-        initObjects()
-
+        repeat(1) {
+            val cubeMesh = ObjLoader.loadMesh("model/cube.obj")
+            cubeMesh.material = Material(texture = Texture.loadFromFile("texture/grassblock.png"))
+            val cube = GameItem().apply { mesh = cubeMesh }
+            cube.scale = 0.5f
+            cube.position.set(0f + it, -1f+it, 0f+it)
+            gameItems += cube
+        }
         tileManger.initialTiles()
         scene.tiles = tileManger.tiles
     }
@@ -78,13 +93,21 @@ class LittleTown : GameLifecycle {
 
         myCamera.camera.updateViewMatrix()
 
-        // TODO manage to don't add twice very quickly
-        val (x, z) = gridSelector.mouseToWorldPosition(window, mouseInput.currentPos, myCamera.camera)
-        gridSelection.position.x = x.toFloat()
-        gridSelection.position.z = z.toFloat()
-        if (mouseInput.isLeftButtonPressed) {
-            tileManger.addTile(x, z)
-        }
+
+//        cameraSelector.selectGameItem(gameItems, myCamera.camera)
+//        cameraSelector.selectGameItem(tileManger.tiles, myCamera.camera)
+        mouseSelector.selectGameItem(tileManger.tiles, window, mouseInput.currentPos, myCamera.camera)
+
+        val (x, y) = gridSelector.mouseToWorld(window, mouseInput.currentPos, myCamera.camera)
+
+        gameItems.first().position.x = x.toFloat()
+        gameItems.first().position.z = y.toFloat()
+
+        hud?.addText("mouse", "mouse: ${mouseInput.currentPos.x}, ${mouseInput.currentPos.y}", 100, 100)
+        hud?.addText("grid", "grid: ${x}, ${y}", 100, 120)
+
+//        hud?.addText("cam", "cam: ${myCamera.camera.position.toNormalizedString()}", 200, 0)
+//        hud?.addText("rot", "rot: ${myCamera.camera.rotation.toNormalizedString()}", 200, 100)
     }
 
     override fun render(window: Window) {

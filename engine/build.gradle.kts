@@ -1,12 +1,13 @@
 plugins {
-    kotlin("jvm") version "1.6.20"
+    kotlin("jvm") version "1.8.0"
+    id("io.gitlab.arturbosch.detekt").version("1.22.0")
 }
 
 group = "fr.nutriz.engine"
 version = "0.1-alpha1"
 
-val lwjglVersion = "3.3.0"
-val jomlVersion = "1.10.4"
+val lwjglVersion = "3.3.1"
+val jomlVersion = "1.10.5"
 
 val lwjglNatives = when (org.gradle.internal.os.OperatingSystem.current()) {
     org.gradle.internal.os.OperatingSystem.LINUX   -> "natives-linux"
@@ -24,7 +25,7 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 }
 
 dependencies {
-    api("dev.romainguy:kotlin-math:1.3.0")
+    api("dev.romainguy:kotlin-math:1.5.3")
     api("org.joml", "joml", jomlVersion)
 
     api(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
@@ -53,4 +54,9 @@ dependencies {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+detekt {
+    buildUponDefaultConfig = true // preconfigure defaults
+    config = files("${rootProject.projectDir}/config/detekt-config.yml")
 }

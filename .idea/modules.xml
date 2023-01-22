@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/engine/engine.iml" filepath="$PROJECT_DIR$/engine/engine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/little-town/little-town.iml" filepath="$PROJECT_DIR$/little-town/little-town.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/yakge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/yakge.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/yakge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/yakge.test.iml" />
+    </modules>
+  </component>
+</project>
